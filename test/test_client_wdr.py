@@ -1,10 +1,10 @@
 from unittest import main, TestCase
 from ipaddress import IPv4Address
 from macaddress import EUI48
-from tplinkrouterc6u.common.dataclass import Firmware, Status
-from tplinkrouterc6u.common.dataclass import IPv4Status, IPv4Reservation, IPv4DHCPLease
-from tplinkrouterc6u import ClientError
-from tplinkrouterc6u.client.wdr import TplinkWDRRouter
+from tplinkrouterc6v.common.dataclass import Firmware, Status
+from tplinkrouterc6v.common.dataclass import IPv4Status, IPv4Reservation, IPv4DHCPLease
+from tplinkrouterc6v import ClientError
+from tplinkrouterc6v.client.wdr import TplinkWDRRouter
 
 _NETWAN = (
     '<SCRIPT language="javascript" type="text/javascript">\nvar wanTypeDetectInfoArray = '

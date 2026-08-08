@@ -22,8 +22,8 @@ from random import randint
 from time import time
 from requests import Session
 
-from tplinkrouterc6u.client.c50 import TPLinkC50Client
-from tplinkrouterc6u.common.exception import AuthorizeError, ClientException
+from tplinkrouterc6v.client.c50 import TPLinkC50Client
+from tplinkrouterc6v.common.exception import AuthorizeError, ClientException
 
 
 class TPLinkWR841NClient(TPLinkC50Client):

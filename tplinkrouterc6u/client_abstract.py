@@ -1,7 +1,7 @@
 from requests.packages import urllib3
 from logging import Logger
-from tplinkrouterc6u.common.package_enum import Connection
-from tplinkrouterc6u.common.dataclass import Firmware, Status, IPv4Status, IPv6Status
+from tplinkrouterc6v.common.package_enum import Connection
+from tplinkrouterc6v.common.dataclass import Firmware, Status, IPv4Status, IPv6Status
 from abc import ABC, abstractmethod
 
 

@@ -1,8 +1,8 @@
 from unittest import main, TestCase
 from unittest.mock import Mock, patch
 
-from tplinkrouterc6u.client.c50 import TPLinkC50Client
-from tplinkrouterc6u.common.exception import AuthorizeError, ClientException
+from tplinkrouterc6v.client.c50 import TPLinkC50Client
+from tplinkrouterc6v.common.exception import AuthorizeError, ClientException
 
 # ---------------------------------------------------------------------------
 # Shared test helpers
@@ -71,7 +71,7 @@ class TestTPLinkC50ClientAuthorize(TestCase):
         mock_session.post.return_value = _make_post_resp(post_status)
         mock_session.get.return_value = _make_get_resp(200)
 
-        with patch("tplinkrouterc6u.client.c50.Session", return_value=mock_session), \
+        with patch("tplinkrouterc6v.client.c50.Session", return_value=mock_session), \
              patch.object(TPLinkC50Client, "_aes_enc", return_value="ENCDATA"), \
              patch.object(TPLinkC50Client, "_make_sign", return_value="SIGN"), \
              patch.object(TPLinkC50Client, "_read_chunked", return_value="CIPHER"), \
@@ -100,7 +100,7 @@ class TestTPLinkC50ClientAuthorize(TestCase):
         mock_session = _mock_session()
         mock_session.post.return_value = _make_post_resp(403)
 
-        with patch("tplinkrouterc6u.client.c50.Session", return_value=mock_session), \
+        with patch("tplinkrouterc6v.client.c50.Session", return_value=mock_session), \
              patch.object(TPLinkC50Client, "_aes_enc", return_value="ENCDATA"), \
              patch.object(TPLinkC50Client, "_make_sign", return_value="SIGN"), \
              patch.object(TPLinkC50Client, "_read_chunked", return_value=""):
@@ -115,7 +115,7 @@ class TestTPLinkC50ClientAuthorize(TestCase):
         mock_session = _mock_session()
         mock_session.post.return_value = _make_post_resp(200)
 
-        with patch("tplinkrouterc6u.client.c50.Session", return_value=mock_session), \
+        with patch("tplinkrouterc6v.client.c50.Session", return_value=mock_session), \
              patch.object(TPLinkC50Client, "_aes_enc", return_value="ENCDATA"), \
              patch.object(TPLinkC50Client, "_make_sign", return_value="SIGN"), \
              patch.object(TPLinkC50Client, "_read_chunked", return_value="CIPHER"), \

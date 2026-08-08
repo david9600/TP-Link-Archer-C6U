@@ -1,7 +1,7 @@
 from unittest import main, TestCase
 from unittest.mock import patch, MagicMock
 from requests import Session
-from tplinkrouterc6u import TPLinkMR200Client
+from tplinkrouterc6v import TPLinkMR200Client
 
 
 class TestTPLinkMR200Client(TestCase):

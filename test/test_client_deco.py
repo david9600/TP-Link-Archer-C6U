@@ -2,7 +2,7 @@ from unittest import main, TestCase
 from json import loads
 from macaddress import EUI48
 from ipaddress import IPv4Address
-from tplinkrouterc6u import (
+from tplinkrouterc6v import (
     TPLinkDecoClient,
     Connection,
     Firmware,

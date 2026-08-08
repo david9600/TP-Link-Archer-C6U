@@ -1,15 +1,15 @@
 import base64
-from tplinkrouterc6u.client.mr import TPLinkMRClient
+from tplinkrouterc6v.client.mr import TPLinkMRClient
 from Crypto.PublicKey import RSA
 from binascii import hexlify
 from Crypto.Cipher import PKCS1_v1_5
 from re import search
-from tplinkrouterc6u.common.package_enum import VPN
-from tplinkrouterc6u.common.dataclass import (
+from tplinkrouterc6v.common.package_enum import VPN
+from tplinkrouterc6v.common.dataclass import (
     LTEStatus,
     VPNStatus,
 )
-from tplinkrouterc6u.common.exception import ClientException, ClientError, AuthorizeError
+from tplinkrouterc6v.common.exception import ClientException, ClientError, AuthorizeError
 
 
 class TPLinkMR200Client(TPLinkMRClient):

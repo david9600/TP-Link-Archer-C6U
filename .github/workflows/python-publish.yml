@@ -55,7 +55,7 @@ jobs:
           python -m pip install --upgrade pip pytest
       - name: Install package
         run: |
-          pip install tplinkrouterc6u
+          pip install tplinkrouterc6v
       - name: Test with pytest
         run: |
           pytest test

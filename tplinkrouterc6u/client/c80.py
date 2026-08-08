@@ -5,13 +5,13 @@ import re
 import requests
 from urllib.parse import urlparse
 from requests import Session
-from tplinkrouterc6u.common.helper import get_ip, get_ipv6, get_mac
-from tplinkrouterc6u.common.package_enum import Connection
-from tplinkrouterc6u.common.exception import ClientException
-from tplinkrouterc6u.common.encryption import EncryptionWrapper
-from tplinkrouterc6u.common.dataclass import Firmware, Status, IPv4Status, IPv6Status, IPv4Reservation
-from tplinkrouterc6u.common.dataclass import IPv4DHCPLease, Device, VPNStatus
-from tplinkrouterc6u.client_abstract import AbstractRouter
+from tplinkrouterc6v.common.helper import get_ip, get_ipv6, get_mac
+from tplinkrouterc6v.common.package_enum import Connection
+from tplinkrouterc6v.common.exception import ClientException
+from tplinkrouterc6v.common.encryption import EncryptionWrapper
+from tplinkrouterc6v.common.dataclass import Firmware, Status, IPv4Status, IPv6Status, IPv4Reservation
+from tplinkrouterc6v.common.dataclass import IPv4DHCPLease, Device, VPNStatus
+from tplinkrouterc6v.client_abstract import AbstractRouter
 
 
 class RouterConstants:

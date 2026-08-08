@@ -1,7 +1,7 @@
 from unittest import main
 from unittest.mock import patch, Mock
 from test_client_c6u import TestTPLinkClient
-from tplinkrouterc6u import TplinkRouterV1_11, ClientException
+from tplinkrouterc6v import TplinkRouterV1_11, ClientException
 
 
 class TestTPLinkClientV1_11(TestTPLinkClient):
@@ -21,8 +21,8 @@ class TestTPLinkClientV1_11(TestTPLinkClient):
         client = TplinkRouterV1_11('http://192.168.0.1', long_password)
         self.assertFalse(client.supports())
 
-    @patch('tplinkrouterc6u.client.c6u.EncryptionWrapper.rsa_encrypt')
-    @patch('tplinkrouterc6u.client.c6u.post')
+    @patch('tplinkrouterc6v.client.c6u.EncryptionWrapper.rsa_encrypt')
+    @patch('tplinkrouterc6v.client.c6u.post')
     def test_authorize_success(self, mock_post: Mock, mock_rsa: Mock) -> None:
         mock_rsa.return_value = 'encrypted_password_hex'
 
@@ -61,8 +61,8 @@ class TestTPLinkClientV1_11(TestTPLinkClient):
         login_data = second_call[1]['data']
         self.assertTrue(login_data.startswith('operation=login&password='))
 
-    @patch('tplinkrouterc6u.client.c6u.EncryptionWrapper.rsa_encrypt')
-    @patch('tplinkrouterc6u.client.c6u.post')
+    @patch('tplinkrouterc6v.client.c6u.EncryptionWrapper.rsa_encrypt')
+    @patch('tplinkrouterc6v.client.c6u.post')
     def test_authorize_failure(self, mock_post: Mock, mock_rsa: Mock) -> None:
         mock_rsa.return_value = 'encrypted_password_hex'
 

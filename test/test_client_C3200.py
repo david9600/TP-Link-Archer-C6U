@@ -4,7 +4,7 @@ from unittest import main, TestCase
 
 from macaddress import EUI48
 
-from tplinkrouterc6u import (
+from tplinkrouterc6v import (
     TplinkC3200Router,
     Connection,
     Status,

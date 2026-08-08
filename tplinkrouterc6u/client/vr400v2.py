@@ -11,9 +11,9 @@ Protocol is similar to MR series but with differences in:
 from re import search, findall
 from logging import Logger
 
-from tplinkrouterc6u.client.mr200 import TPLinkMR200Client
-from tplinkrouterc6u.common.exception import ClientException
-from tplinkrouterc6u.common.dataclass import VPNStatus
+from tplinkrouterc6v.client.mr200 import TPLinkMR200Client
+from tplinkrouterc6v.common.exception import ClientException
+from tplinkrouterc6v.common.dataclass import VPNStatus
 
 
 class TPLinkVR400v2Client(TPLinkMR200Client):

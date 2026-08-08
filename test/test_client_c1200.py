@@ -1,6 +1,6 @@
 from unittest import main, TestCase
 from json import loads
-from tplinkrouterc6u import (
+from tplinkrouterc6v import (
     TplinkC1200Router,
     Connection,
     ClientException,

@@ -6,10 +6,10 @@ from requests import post, Response
 from logging import Logger
 from urllib.parse import parse_qsl
 from json import dumps
-from tplinkrouterc6u.common.helper import get_ip, get_ipv6, get_mac
-from tplinkrouterc6u.common.encryption import EncryptionWrapper
-from tplinkrouterc6u.common.package_enum import Connection, VPN, VpnClientServerProtocol
-from tplinkrouterc6u.common.dataclass import (
+from tplinkrouterc6v.common.helper import get_ip, get_ipv6, get_mac
+from tplinkrouterc6v.common.encryption import EncryptionWrapper
+from tplinkrouterc6v.common.package_enum import Connection, VPN, VpnClientServerProtocol
+from tplinkrouterc6v.common.dataclass import (
     Firmware,
     Status,
     Device,
@@ -23,8 +23,8 @@ from tplinkrouterc6u.common.dataclass import (
     VpnClientServer,
     VpnClientDevice,
 )
-from tplinkrouterc6u.common.exception import ClientException, ClientError
-from tplinkrouterc6u.client_abstract import AbstractRouter
+from tplinkrouterc6v.common.exception import ClientException, ClientError
+from tplinkrouterc6v.client_abstract import AbstractRouter
 from abc import abstractmethod
 
 

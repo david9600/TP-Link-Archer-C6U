@@ -1,6 +1,6 @@
 from unittest import main, TestCase
 
-from tplinkrouterc6u.common.encryption import EncryptionWrapper
+from tplinkrouterc6v.common.encryption import EncryptionWrapper
 
 
 class TestEncryptionWrapper(TestCase):

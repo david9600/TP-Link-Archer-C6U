@@ -5,7 +5,7 @@ from macaddress import EUI48
 from ipaddress import IPv4Address, IPv6Address
 from dataclasses import dataclass, field
 from datetime import datetime
-from tplinkrouterc6u.common.package_enum import Connection, VpnClientServerProtocol
+from tplinkrouterc6v.common.package_enum import Connection, VpnClientServerProtocol
 
 
 @dataclass

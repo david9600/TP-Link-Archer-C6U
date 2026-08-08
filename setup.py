@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="tplinkrouterc6u",
+    name="tplinkrouterc6v",
     version="5.28.0",
     author="Alex Erohin",
     author_email="alexanderErohin@yandex.ru",

@@ -1,8 +1,8 @@
 from unittest import main, TestCase
 from json import loads
 
-from tplinkrouterc6u.common.encryption import EncryptionWrapperMRECC
-from tplinkrouterc6u.client.mr import TPLinkMR600Client
+from tplinkrouterc6v.common.encryption import EncryptionWrapperMRECC
+from tplinkrouterc6v.client.mr import TPLinkMR600Client
 
 
 class TestEncryptionWrapperMRECC(TestCase):

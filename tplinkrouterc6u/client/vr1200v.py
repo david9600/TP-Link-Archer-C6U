@@ -4,8 +4,8 @@ from datetime import datetime, timedelta
 from hashlib import md5
 from time import sleep
 from requests import Response
-from tplinkrouterc6u.client.ex import TPLinkEXClient
-from tplinkrouterc6u.common.exception import ClientException
+from tplinkrouterc6v.client.ex import TPLinkEXClient
+from tplinkrouterc6v.common.exception import ClientException
 
 
 class TplinkVR1200vRouter(TPLinkEXClient):

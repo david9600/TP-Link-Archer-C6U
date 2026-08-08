@@ -1,7 +1,7 @@
 from unittest import main, TestCase
 from unittest.mock import patch, MagicMock
 from requests import Session
-from tplinkrouterc6u import TPLinkVR400v2Client
+from tplinkrouterc6v import TPLinkVR400v2Client
 
 
 class TestTPLinkVR400v2Client(TestCase):

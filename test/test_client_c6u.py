@@ -4,7 +4,7 @@ from macaddress import EUI48
 from ipaddress import IPv4Address, IPv6Address
 from json import loads
 from urllib.parse import parse_qsl
-from tplinkrouterc6u import (
+from tplinkrouterc6v import (
     TplinkRouter,
     Connection,
     Status,
@@ -19,7 +19,7 @@ from tplinkrouterc6u import (
     VpnClientServer,
     VpnClientDevice,
 )
-from tplinkrouterc6u.common.exception import ClientError
+from tplinkrouterc6v.common.exception import ClientError
 
 
 class TestTPLinkClient(TestCase):
@@ -1088,7 +1088,7 @@ class TestTPLinkClient(TestCase):
                     return loads(response_status)['data']
                 elif path == 'admin/wireless?form=statistics':
                     # Simulate the error that occurs when WiFi is disabled
-                    from tplinkrouterc6u.common.exception import ClientError
+                    from tplinkrouterc6v.common.exception import ClientError
                     raise ClientError('TplinkRouter - An unknown response - Expecting value: line 1 column 1 (char 0)')
                 raise ClientException()
 
@@ -1446,7 +1446,7 @@ class TestTPLinkClient(TestCase):
         do not implement. _decrypt_response must not raise on those — return {} so the
         caller falls through to its standard 'invalid response' handling instead of
         bubbling up an opaque ord()/JSON error."""
-        from tplinkrouterc6u.client.c6u import TplinkEncryption
+        from tplinkrouterc6v.client.c6u import TplinkEncryption
 
         class _Stub(TplinkEncryption):
             def __init__(self):
@@ -1485,7 +1485,7 @@ class TestWifiGeneric(TestCase):
         self.client._logged = True
         self.client._stok = 'mock_stok'
 
-    @patch('tplinkrouterc6u.client.c6u.post')
+    @patch('tplinkrouterc6v.client.c6u.post')
     def test_get_wifi(self, mock_post):
         # Test generic Wi-Fi info retrieval for Guest 2G
         mock_data = {
@@ -1503,7 +1503,7 @@ class TestWifiGeneric(TestCase):
         self.assertEqual(info.ssid, 'Generic_Guest')
         self.assertEqual(info.portal_password, 'password123')
 
-    @patch('tplinkrouterc6u.client.c6u.post')
+    @patch('tplinkrouterc6v.client.c6u.post')
     def test_get_wifi_prefixed(self, mock_post):
         # Test handling of prefixed keys (e.g. from 'all' form)
         mock_data = {
@@ -1517,7 +1517,7 @@ class TestWifiGeneric(TestCase):
         self.assertTrue(info.enable)
         self.assertEqual(info.ssid, 'Host_2G')
 
-    @patch('tplinkrouterc6u.client.c6u.post')
+    @patch('tplinkrouterc6v.client.c6u.post')
     def test_set_wifi_enhanced(self, mock_post):
         # Verify set_wifi still builds correct data strings
         with patch.object(self.client, 'request') as mock_request:
@@ -1546,7 +1546,7 @@ class TestIPv4ListEnvelope(TestCase):
     first item['mac'] raises TypeError.
     """
 
-    @patch('tplinkrouterc6u.client.c6u.TplinkBaseRouter.request')
+    @patch('tplinkrouterc6v.client.c6u.TplinkBaseRouter.request')
     def test_reservations_accept_bare_list(self, mock_request: Mock) -> None:
         mock_request.return_value = [
             {'mac': '02-00-00-00-00-01', 'ip': '10.0.0.1', 'comment': 'a', 'enable': 'on'},
@@ -1556,7 +1556,7 @@ class TestIPv4ListEnvelope(TestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(str(result[0].macaddr), '02-00-00-00-00-01')
 
-    @patch('tplinkrouterc6u.client.c6u.TplinkBaseRouter.request')
+    @patch('tplinkrouterc6v.client.c6u.TplinkBaseRouter.request')
     def test_reservations_accept_list_envelope(self, mock_request: Mock) -> None:
         mock_request.return_value = {'list': [
             {'mac': '02-00-00-00-00-02', 'ip': '10.0.0.2', 'comment': 'b', 'enable': 'on',
@@ -1567,7 +1567,7 @@ class TestIPv4ListEnvelope(TestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(str(result[0].macaddr), '02-00-00-00-00-02')
 
-    @patch('tplinkrouterc6u.client.c6u.TplinkBaseRouter.request')
+    @patch('tplinkrouterc6v.client.c6u.TplinkBaseRouter.request')
     def test_reservations_reject_unknown_shape(self, mock_request: Mock) -> None:
         # A clear error beats TypeError from three frames deeper: the message
         # names the keys actually received, which is what a bug report needs.
@@ -1577,7 +1577,7 @@ class TestIPv4ListEnvelope(TestCase):
             client.get_ipv4_reservations()
         self.assertIn('unexpected', str(ctx.exception))
 
-    @patch('tplinkrouterc6u.client.c6u.TplinkBaseRouter.request')
+    @patch('tplinkrouterc6v.client.c6u.TplinkBaseRouter.request')
     def test_leases_accept_both_shapes(self, mock_request: Mock) -> None:
         lease = {'macaddr': '02-00-00-00-00-03', 'ipaddr': '10.0.0.3',
                  'name': 'n', 'leasetime': '1:00:00'}

@@ -1,10 +1,10 @@
 from unittest import main, TestCase
 from ipaddress import IPv4Address, IPv6Address
 from macaddress import EUI48
-from tplinkrouterc6u.common.dataclass import Firmware, Status, Device
-from tplinkrouterc6u.common.dataclass import IPv4Status, IPv6Status, IPv4Reservation, IPv4DHCPLease, VPNStatus
-from tplinkrouterc6u import Connection, ClientException
-from tplinkrouterc6u.client.c80 import TplinkC80Router
+from tplinkrouterc6v.common.dataclass import Firmware, Status, Device
+from tplinkrouterc6v.common.dataclass import IPv4Status, IPv6Status, IPv4Reservation, IPv4DHCPLease, VPNStatus
+from tplinkrouterc6v import Connection, ClientException
+from tplinkrouterc6v.client.c80 import TplinkC80Router
 
 
 IPV4_STATUS_RESPONSE = ('00000\r\nid 1|1,0,0\r\nauthKey token\r\nreserved\r\nsetWzd 8\r\nmode 1\r\nlogLevel 3\r\n'

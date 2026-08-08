@@ -6,13 +6,13 @@ from urllib.parse import urlparse
 import requests
 from requests import Response
 
-from tplinkrouterc6u.client.mr200 import TPLinkMR200Client
-from tplinkrouterc6u.common.package_enum import VPN
-from tplinkrouterc6u.common.dataclass import (
+from tplinkrouterc6v.client.mr200 import TPLinkMR200Client
+from tplinkrouterc6v.common.package_enum import VPN
+from tplinkrouterc6v.common.dataclass import (
     LTEStatus,
 )
-from tplinkrouterc6u.common.exception import ClientException, ClientError
-from tplinkrouterc6u.common.package_enum import Connection
+from tplinkrouterc6v.common.exception import ClientException, ClientError
+from tplinkrouterc6v.common.package_enum import Connection
 
 
 class TplinkC3200Router(TPLinkMR200Client):

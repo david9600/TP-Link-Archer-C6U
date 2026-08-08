@@ -3,11 +3,11 @@ from json import dumps
 from requests.exceptions import ConnectTimeout
 from collections.abc import Callable
 from logging import Logger
-from tplinkrouterc6u.common.helper import get_ip, get_mac, get_value
-from tplinkrouterc6u.common.package_enum import Connection
-from tplinkrouterc6u.common.dataclass import Firmware, Status, Device, IPv4Status, LTEStatus
-from tplinkrouterc6u.client_abstract import AbstractRouter
-from tplinkrouterc6u.client.c6u import TplinkEncryption
+from tplinkrouterc6v.common.helper import get_ip, get_mac, get_value
+from tplinkrouterc6v.common.package_enum import Connection
+from tplinkrouterc6v.common.dataclass import Firmware, Status, Device, IPv4Status, LTEStatus
+from tplinkrouterc6v.client_abstract import AbstractRouter
+from tplinkrouterc6v.client.c6u import TplinkEncryption
 
 
 class TPLinkDecoClient(TplinkEncryption, AbstractRouter):

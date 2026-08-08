@@ -3,9 +3,9 @@ from json import loads
 from datetime import timedelta, datetime
 from typing import List
 from logging import Logger
-from tplinkrouterc6u.common.package_enum import Connection, VPN
-from tplinkrouterc6u.common.helper import get_ip, get_mac, get_value
-from tplinkrouterc6u.common.dataclass import (
+from tplinkrouterc6v.common.package_enum import Connection, VPN
+from tplinkrouterc6v.common.helper import get_ip, get_mac, get_value
+from tplinkrouterc6v.common.dataclass import (
     Firmware,
     Status,
     Device,
@@ -16,8 +16,8 @@ from tplinkrouterc6u.common.dataclass import (
     SMS,
     ServingCell,
     VPNStatus)
-from tplinkrouterc6u.common.exception import ClientException, ClientError
-from tplinkrouterc6u.client.mr import TPLinkMRClientBase, TPLinkMRClientBaseGCM
+from tplinkrouterc6v.common.exception import ClientException, ClientError
+from tplinkrouterc6v.client.mr import TPLinkMRClientBase, TPLinkMRClientBaseGCM
 
 
 # Class for EX series routers which supports old firmwares with AES cipher CBC mode

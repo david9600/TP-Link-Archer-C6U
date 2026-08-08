@@ -2,7 +2,7 @@ from unittest import main, TestCase
 from datetime import datetime
 from macaddress import EUI48
 from ipaddress import IPv4Address
-from tplinkrouterc6u import (
+from tplinkrouterc6v import (
     TPLinkEXClient,
     Connection,
     Firmware,

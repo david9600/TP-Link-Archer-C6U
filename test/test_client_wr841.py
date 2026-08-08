@@ -1,8 +1,8 @@
 from unittest import main, TestCase
 from unittest.mock import Mock, patch
 
-from tplinkrouterc6u.client.c50 import TPLinkC50Client
-from tplinkrouterc6u.client.wr841 import TPLinkWR841NClient
+from tplinkrouterc6v.client.c50 import TPLinkC50Client
+from tplinkrouterc6v.client.wr841 import TPLinkWR841NClient
 from ipaddress import IPv4Address
 
 # ---------------------------------------------------------------------------
@@ -68,7 +68,7 @@ class TestTPLinkWR841NClientAuthorize(TestCase):
         mock_session.get.return_value = _make_get_resp(200)
         mock_session.post.return_value = _make_post_resp(200)
 
-        with patch("tplinkrouterc6u.client.wr841.Session", return_value=mock_session), \
+        with patch("tplinkrouterc6v.client.wr841.Session", return_value=mock_session), \
              patch.object(TPLinkWR841NClient, "_aes_enc", return_value="ENCDATA"), \
              patch.object(TPLinkWR841NClient, "_make_sign", return_value="SIGN"), \
              patch.object(TPLinkWR841NClient, "_read_chunked", return_value="CIPHER"), \
@@ -92,7 +92,7 @@ class TestTPLinkWR841NClientAuthorize(TestCase):
         mock_session.get.return_value = _make_get_resp(200)
         mock_session.post.return_value = _make_post_resp(200)
 
-        with patch("tplinkrouterc6u.client.wr841.Session", return_value=mock_session), \
+        with patch("tplinkrouterc6v.client.wr841.Session", return_value=mock_session), \
              patch.object(TPLinkWR841NClient, "_aes_enc", return_value="ENCDATA"), \
              patch.object(TPLinkWR841NClient, "_make_sign", return_value="SIGN"), \
              patch.object(TPLinkWR841NClient, "_read_chunked", return_value="CIPHER"), \

@@ -8,11 +8,11 @@ from urllib.parse import urlparse
 
 from requests import Session
 
-from tplinkrouterc6u.client_abstract import AbstractRouter
-from tplinkrouterc6u.common.dataclass import Device, Firmware, IPv4Status, Status
-from tplinkrouterc6u.common.exception import AuthorizeError, ClientError, ClientException
-from tplinkrouterc6u.common.helper import get_ip, get_mac
-from tplinkrouterc6u.common.package_enum import Connection
+from tplinkrouterc6v.client_abstract import AbstractRouter
+from tplinkrouterc6v.common.dataclass import Device, Firmware, IPv4Status, Status
+from tplinkrouterc6v.common.exception import AuthorizeError, ClientError, ClientException
+from tplinkrouterc6v.common.helper import get_ip, get_mac
+from tplinkrouterc6v.common.package_enum import Connection
 
 
 _PATH_VERSION = "/data/version.json"

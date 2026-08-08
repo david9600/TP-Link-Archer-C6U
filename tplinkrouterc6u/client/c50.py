@@ -30,8 +30,8 @@ from Crypto.PublicKey.RSA import construct
 from Crypto.Util.Padding import pad, unpad
 from requests import Session
 
-from tplinkrouterc6u.client.mr import TPLinkMRClient
-from tplinkrouterc6u.common.exception import AuthorizeError, ClientException
+from tplinkrouterc6v.client.mr import TPLinkMRClient
+from tplinkrouterc6v.common.exception import AuthorizeError, ClientException
 
 
 class TPLinkC50Client(TPLinkMRClient):

@@ -1,7 +1,7 @@
 import base64
 from http import HTTPStatus
-from tplinkrouterc6u.client.mr import TPLinkMRClientBase
-from tplinkrouterc6u.common.exception import ClientException
+from tplinkrouterc6v.client.mr import TPLinkMRClientBase
+from tplinkrouterc6v.common.exception import ClientException
 from logging import Logger
 
 

@@ -26,8 +26,8 @@ from Crypto.Util.Padding import pad, unpad
 from binascii import hexlify
 from requests import post
 
-from tplinkrouterc6u.client.c6u import TplinkBaseRouter
-from tplinkrouterc6u.common.exception import ClientException, ClientError
+from tplinkrouterc6v.client.c6u import TplinkBaseRouter
+from tplinkrouterc6v.common.exception import ClientException, ClientError
 
 # SG_L1_S2 and CE_RED certifications that trigger enhanced encryption
 SG_CERTIFICATIONS = ['SG CLS L1 STAGE2', 'EU CE RED']

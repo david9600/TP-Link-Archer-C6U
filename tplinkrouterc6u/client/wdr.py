@@ -1,10 +1,10 @@
 import base64
 from requests import get, Response
 from logging import Logger
-from tplinkrouterc6u.common.helper import get_ip, get_mac
-from tplinkrouterc6u.common.package_enum import Connection
-from tplinkrouterc6u.common.exception import ClientError
-from tplinkrouterc6u.common.dataclass import (
+from tplinkrouterc6v.common.helper import get_ip, get_mac
+from tplinkrouterc6v.common.package_enum import Connection
+from tplinkrouterc6v.common.exception import ClientError
+from tplinkrouterc6v.common.dataclass import (
     Firmware,
     Status,
     Device,
@@ -12,7 +12,7 @@ from tplinkrouterc6u.common.dataclass import (
     IPv4DHCPLease,
     IPv4Status,
 )
-from tplinkrouterc6u.client_abstract import AbstractRouter
+from tplinkrouterc6v.client_abstract import AbstractRouter
 
 from dataclasses import dataclass
 from html.parser import HTMLParser

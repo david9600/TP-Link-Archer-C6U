@@ -3,7 +3,7 @@ from hashlib import sha256
 from unittest import main, TestCase
 from unittest.mock import patch, Mock
 
-from tplinkrouterc6u import TplinkRouterSG, ClientException
+from tplinkrouterc6v import TplinkRouterSG, ClientException
 from test_client_c6u import TestTPLinkClient
 
 
@@ -26,7 +26,7 @@ class TestTplinkRouterSGUnit(TestCase):
         client = TplinkRouterSG('http://192.168.0.1', long_password)
         self.assertFalse(client.supports())
 
-    @patch('tplinkrouterc6u.client.sg.post')
+    @patch('tplinkrouterc6v.client.sg.post')
     def test_check_sg_certification_match(self, mock_post: Mock) -> None:
         response = Mock()
         response.json.return_value = {
@@ -44,7 +44,7 @@ class TestTplinkRouterSGUnit(TestCase):
         call_args = mock_post.call_args
         self.assertIn('device_config', call_args[0][0])
 
-    @patch('tplinkrouterc6u.client.sg.post')
+    @patch('tplinkrouterc6v.client.sg.post')
     def test_check_sg_certification_no_match(self, mock_post: Mock) -> None:
         response = Mock()
         response.json.return_value = {
@@ -59,7 +59,7 @@ class TestTplinkRouterSGUnit(TestCase):
 
         self.assertFalse(result)
 
-    @patch('tplinkrouterc6u.client.sg.post')
+    @patch('tplinkrouterc6v.client.sg.post')
     def test_authorize_success(self, mock_post: Mock) -> None:
         pwd_keys_response = Mock()
         pwd_keys_response.json.return_value = {
@@ -115,7 +115,7 @@ class TestTplinkRouterSGUnit(TestCase):
         third_call = mock_post.call_args_list[2]
         self.assertIn('login?form=login', third_call[0][0])
 
-    @patch('tplinkrouterc6u.client.sg.post')
+    @patch('tplinkrouterc6v.client.sg.post')
     def test_authorize_failure(self, mock_post: Mock) -> None:
         pwd_keys_response = Mock()
         pwd_keys_response.json.return_value = {
@@ -176,7 +176,7 @@ class TestTplinkRouterSGUnit(TestCase):
         self.assertEqual(client._hash, expected_hash)
         self.assertNotEqual(client._hash, admin_hash)
 
-    @patch('tplinkrouterc6u.client.sg.post')
+    @patch('tplinkrouterc6v.client.sg.post')
     def test_request_hmac_signature(self, mock_post: Mock) -> None:
         """Verify non-login requests use HMAC-SHA256 signature."""
         client = TplinkRouterSG('http://192.168.0.1', 'testpassword')
@@ -213,7 +213,7 @@ class TestTplinkRouterSGUnit(TestCase):
         # Hash should have been updated to SHA256 of the encrypted data
         self.assertNotEqual(client._hash, 'fakehash')
 
-    @patch('tplinkrouterc6u.client.sg.post')
+    @patch('tplinkrouterc6v.client.sg.post')
     def test_request_write_dict_body(self, mock_post: Mock) -> None:
         """Verify that WRITE requests use dictionary format for BE-series compatibility."""
         client = TplinkRouterSG('http://192.168.0.1', 'testpassword')

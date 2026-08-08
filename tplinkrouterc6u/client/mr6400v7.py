@@ -10,8 +10,8 @@ Protocol is similar to MR series but with differences in:
 
 from logging import Logger
 
-from tplinkrouterc6u.client.mr import TPLinkMRClient
-from tplinkrouterc6u.common.exception import ClientException, ClientError
+from tplinkrouterc6v.client.mr import TPLinkMRClient
+from tplinkrouterc6v.common.exception import ClientException, ClientError
 
 from json import loads
 

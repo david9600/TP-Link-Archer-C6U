@@ -4,12 +4,12 @@ from unittest import TestCase, main
 
 from macaddress import EUI48
 
-from tplinkrouterc6u import IPv4Status
-from tplinkrouterc6u.client.xdr import TPLinkXDRClient
-from tplinkrouterc6u.common.dataclass import (Device, Firmware, IPv4DHCPLease,
+from tplinkrouterc6v import IPv4Status
+from tplinkrouterc6v.client.xdr import TPLinkXDRClient
+from tplinkrouterc6v.common.dataclass import (Device, Firmware, IPv4DHCPLease,
                                               IPv4Reservation, Status)
-from tplinkrouterc6u.common.helper import get_ip, get_mac
-from tplinkrouterc6u.common.package_enum import Connection
+from tplinkrouterc6v.common.helper import get_ip, get_mac
+from tplinkrouterc6v.common.package_enum import Connection
 
 
 class TestTPLinkXDRClient(TestCase):

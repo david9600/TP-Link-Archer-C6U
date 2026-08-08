@@ -1,12 +1,12 @@
 # TP-Link Router API (supports also Mercusys Router)
 Python package for API access and management for TP-Link and Mercusys Routers. See [Supported routers](#supports)
 
-[![Pypi](https://img.shields.io/pypi/v/tplinkrouterc6u)](https://pypi.org/project/tplinkrouterc6u/)
-[![Downloads](https://static.pepy.tech/personalized-badge/tplinkrouterc6u?period=total&units=international_system&left_color=grey&right_color=orange&left_text=Downloads)](https://pypi.org/project/tplinkrouterc6u/)
-![Python versions](https://img.shields.io/pypi/pyversions/tplinkrouterc6u)
+[![Pypi](https://img.shields.io/pypi/v/tplinkrouterc6v)](https://pypi.org/project/tplinkrouterc6v/)
+[![Downloads](https://static.pepy.tech/personalized-badge/tplinkrouterc6v?period=total&units=international_system&left_color=grey&right_color=orange&left_text=Downloads)](https://pypi.org/project/tplinkrouterc6v/)
+![Python versions](https://img.shields.io/pypi/pyversions/tplinkrouterc6v)
 
 ## Installation
-`pip install tplinkrouterc6u`
+`pip install tplinkrouterc6v`
 
 ## Dependencies
  - [requests](https://pypi.org/project/requests/)
@@ -19,7 +19,7 @@ Python package for API access and management for TP-Link and Mercusys Routers. S
 - If you use `https` connection - You need to turn on "Local Management via HTTPS" (advanced->system->administration) in the router web UI
 
 ```python
-from tplinkrouterc6u import (
+from tplinkrouterc6v import (
     TplinkRouterProvider,
     TplinkRouterV1_11,
     TplinkRouterSG, # For routers like Archer BE3600, Archer BE230
@@ -533,7 +533,7 @@ Guidelines [CONTRIBUTING.md](https://github.com/AlexandrErohin/TP-Link-Archer-C6
 
 - Download this repository.
 - Run `pip install -e path/to/repo`.
-- Make changes to files within the `tplinkrouterc6u` directory.
+- Make changes to files within the `tplinkrouterc6v` directory.
 - Exercise the changes following the "Usage" section above.
 
 The sanity check test.py illustrates a few tests and runs through a list of queries in queries.txt creating logs of the results of each query in the logs folder. This can be used to capture the dictionary output of all cgi-bin form submissions.

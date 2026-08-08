@@ -3,9 +3,9 @@ from unittest.mock import Mock
 
 from requests.cookies import RequestsCookieJar
 
-from tplinkrouterc6u import TPLinkCPE210Client
-from tplinkrouterc6u.common.exception import ClientError
-from tplinkrouterc6u.common.package_enum import Connection
+from tplinkrouterc6v import TPLinkCPE210Client
+from tplinkrouterc6v.common.exception import ClientError
+from tplinkrouterc6v.common.package_enum import Connection
 
 
 class TestTPLinkCPE210Client(TestCase):

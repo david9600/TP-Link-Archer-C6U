@@ -5,11 +5,11 @@ from urllib.parse import quote
 from requests import Session, Response
 from datetime import timedelta, datetime
 from logging import Logger
-from tplinkrouterc6u.common.helper import get_ip, get_ipv6, get_mac, get_value
-from tplinkrouterc6u.common.encryption import EncryptionWrapperMR, EncryptionWrapperMRGCM, EncryptionWrapperMRECC
+from tplinkrouterc6v.common.helper import get_ip, get_ipv6, get_mac, get_value
+from tplinkrouterc6v.common.encryption import EncryptionWrapperMR, EncryptionWrapperMRGCM, EncryptionWrapperMRECC
 from json import loads as json_loads
-from tplinkrouterc6u.common.package_enum import Connection, VPN
-from tplinkrouterc6u.common.dataclass import (
+from tplinkrouterc6v.common.package_enum import Connection, VPN
+from tplinkrouterc6v.common.dataclass import (
     Firmware,
     Status,
     Device,
@@ -21,8 +21,8 @@ from tplinkrouterc6u.common.dataclass import (
     LTEStatus,
     VPNStatus,
 )
-from tplinkrouterc6u.common.exception import ClientException, ClientError
-from tplinkrouterc6u.client_abstract import AbstractRouter
+from tplinkrouterc6v.common.exception import ClientException, ClientError
+from tplinkrouterc6v.client_abstract import AbstractRouter
 from typing import List
 
 

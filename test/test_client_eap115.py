@@ -1,7 +1,7 @@
 from unittest import main, TestCase
 from unittest.mock import Mock
 
-from tplinkrouterc6u import TPLinkEAP115Client
+from tplinkrouterc6v import TPLinkEAP115Client
 
 
 class TestTPLinkEAP115Client(TestCase):
