@@ -174,6 +174,8 @@ class TPLinkMRClientBase(AbstractRouter):
         ]
         _, values = self.req_act(acts)
 
+        self._logger.info(values)
+
         if values['0'].__class__ == list:
             values['0'] = values['0'][0]
 
@@ -411,7 +413,7 @@ class TPLinkMRClientBase(AbstractRouter):
         act_types, act_data = self._fill_acts(acts)
 
         data = '&'.join(act_types) + '\r\n' + ''.join(act_data)
-
+        self._logger.info(data)
         url = self._get_url('cgi_gdpr')
         (code, response) = self._request(url, data_str=data, encrypt=True)
 
