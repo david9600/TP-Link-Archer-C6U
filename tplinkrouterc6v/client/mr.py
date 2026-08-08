@@ -170,7 +170,7 @@ class TPLinkMRClientBase(AbstractRouter):
                 'X_TP_TotalPacketsReceived',
             ]),
             self.ActItem(self.ActItem.GS, 'WAN_IP_CONN',
-                         attrs=['enable', 'X_TP_IPv6Enabl', 'X_TP_IPv6ConnStatus', 'X_TP_ExternalIPv6Address']),
+                         attrs=['enable', 'X_TP_IPv6Enabled', 'X_TP_IPv6ConnStatus', 'X_TP_ExternalIPv6Address']),
         ]
         _, values = self.req_act(acts)
 
