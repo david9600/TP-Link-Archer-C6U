@@ -153,6 +153,7 @@ class TPLinkMR200Client(TPLinkMRClient):
             ))
 
         data = ''.join(act_data)
+        self._logger.info(data)
         url = f"{self.host}/cgi?" + '&'.join(act_types)
         response = self.req.post(url, data=data)
         code = response.status_code
