@@ -241,6 +241,7 @@ class TPLinkMRClientBase(AbstractRouter):
         try:
             stat_acts = [self.ActItem(self.ActItem.GL, 'STAT_ENTRY')]
             _, stat_values = self.req_act(stat_acts)
+            self._logger.info(stat_values)
             for item in self._to_list(stat_values):
                 mac = item.get('macAddress')
                 if mac and mac in devices:
@@ -248,6 +249,16 @@ class TPLinkMRClientBase(AbstractRouter):
                     devices[mac].up_speed = int(item.get('currBytesTx', 0))
                     devices[mac].traffic_usage = (int(item.get('totalBytesRx', 0)) +
                                                   int(item.get('totalBytesTx', 0)))
+        except Exception:
+            pass
+
+        try:
+            wan_usb_acts = [self.ActItem(self.ActItem.GL, 'WAN_USB_3G_LINK_CFG', attrs=['enable', 'cardName'])]
+            _, wan_usb_values = self.req_act(wan_usb_acts)
+
+            self._logger.info(wan_usb_values)
+            # status.wan_usb_ready = item.get('cardName') ==
+
         except Exception:
             pass
 
