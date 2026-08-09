@@ -256,7 +256,7 @@ class TPLinkMRClientBase(AbstractRouter):
             _, wan_usb_values = self.req_act(wan_usb_acts)
             for item in self._to_list(wan_usb_values):
                 if int(item['enable']) == 1:
-                    status.wan_usb_state = item['cardName']
+                    status.wan_usb_state = item.get('cardName', '')
         except Exception:
             pass
 
