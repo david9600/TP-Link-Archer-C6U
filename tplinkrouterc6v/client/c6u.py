@@ -481,7 +481,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
                         devices[nclient['mac']].ap_name = ap['name']
                         devices[nclient['mac']].signal = nclient['signal_strength']
                     else:
-                        # prefix * helps sorting main node devices in display
+                        # prefix * helps identify and sort main node devices for display
                         devices[nclient['mac']].ap_name = '*'+ap['name']
         except Exception:
             # skip if router doesn't support EasyMesh
