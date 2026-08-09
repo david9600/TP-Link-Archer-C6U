@@ -257,7 +257,9 @@ class TPLinkMRClientBase(AbstractRouter):
             _, wan_usb_values = self.req_act(wan_usb_acts)
 
             self._logger.info(wan_usb_values)
-            # status.wan_usb_ready = item.get('cardName') ==
+            self._logger.info("Card name field: %s", item.get('cardName'))
+
+            # status.wan_usb_ready = item.get('cardName') == 'Identify successfully'
 
         except Exception:
             pass
