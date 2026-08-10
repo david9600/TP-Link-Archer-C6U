@@ -242,6 +242,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         self._sysauth = None
         self._data_block = 'data'
         self._smart_network = True
+        self._easymesh = True
         self._perf_status = True
         self._url_firmware = 'admin/firmware?form=upgrade&operation=read'
         self._url_ipv4_reservations = 'admin/dhcps?form=reservation&operation=load'
@@ -472,6 +473,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             pass
 
         try:
+            self._logger.info("Entering EM code")
             easymesh_node_list = self.request('admin/easymesh_network?form=get_mesh_device_list_all&operation=read', 'operation=read')
             for ap in easymesh_node_list:
                 # 'sclient' is mesh main or satellite, 'nclient' is a network device
