@@ -479,7 +479,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             except Exception:
                 self._easymesh = False
 
-        if _easymesh:
+        if self._easymesh:
             self._logger.info("Entering EM code")
             easymesh_node_list = self.request(self._url_easymesh_device_list, 'operation=read')
             for ap in easymesh_node_list:
