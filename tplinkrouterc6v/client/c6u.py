@@ -482,7 +482,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
 
         if easymesh_device_list:
             self._logger.info("Entering EM processing")
-            for ap in easymesh_node_list:
+            for ap in easymesh_device_list:
                 # 'sclient' is mesh main or satellite, 'nclient' is a network device
                 sclient_detail = self.request('admin/easymesh_network?form=mesh_sclient_detail&operation=read&mac='+ap['mac'], 'operation=read&mac='+ap['mac'])
                 for nclient in sclient_detail['mesh_nclient_list']:
