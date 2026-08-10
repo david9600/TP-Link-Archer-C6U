@@ -248,6 +248,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         self._url_ipv4_reservations = 'admin/dhcps?form=reservation&operation=load'
         self._url_ipv4_dhcp_leases = 'admin/dhcps?form=client&operation=load'
         self._url_smart_network = 'admin/smart_network?form=game_accelerator&operation=loadDevice'
+        self._url_easymesh_device_list = 'admin/easymesh_network?form=get_mesh_device_list_all&operation=read'
         self._url_openvpn = 'admin/openvpn?form=config&operation=read'
         self._url_pptpd = 'admin/pptpd?form=config&operation=read'
         self._url_vpnconn_openvpn = 'admin/vpnconn?form=config&operation=list&vpntype=openvpn'
@@ -472,9 +473,15 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             # WiFi might be disabled on the router, skip wireless statistics
             pass
 
-        try:
+        if self._easymesh:
+            try:
+                easymesh_node_list = self.request(self._url_easymesh_device_list, 'operation=read')
+            except Exception:
+                self._easymesh = False
+
+        if _easymesh:
             self._logger.info("Entering EM code")
-            easymesh_node_list = self.request('admin/easymesh_network?form=get_mesh_device_list_all&operation=read', 'operation=read')
+            easymesh_node_list = self.request(self._url_easymesh_device_list, 'operation=read')
             for ap in easymesh_node_list:
                 # 'sclient' is mesh main or satellite, 'nclient' is a network device
                 sclient_detail = self.request('admin/easymesh_network?form=mesh_sclient_detail&operation=read&mac='+ap['mac'], 'operation=read&mac='+ap['mac'])
@@ -485,9 +492,6 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
                     else:
                         # prefix * helps identify and sort main node devices for display
                         devices[nclient['mac']].ap_name = '*'+ap['name']
-        except Exception:
-            # skip if router doesn't support EasyMesh
-            pass
         
         status.devices = list(devices.values())
         status.clients_total = (status.wired_total + status.wifi_clients_total + status.guest_clients_total
