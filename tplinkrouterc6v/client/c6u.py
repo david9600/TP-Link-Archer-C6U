@@ -473,15 +473,15 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             # WiFi might be disabled on the router, skip wireless statistics
             pass
 
+        easymesh_device_list = None
         if self._easymesh:
             try:
-                easymesh_node_list = self.request(self._url_easymesh_device_list, 'operation=read')
+                easymesh_device_list = self.request(self._url_easymesh_device_list, 'operation=read')
             except Exception:
                 self._easymesh = False
 
-        if self._easymesh:
-            self._logger.info("Entering EM code")
-            easymesh_node_list = self.request(self._url_easymesh_device_list, 'operation=read')
+        if easymesh_device_list:
+            self._logger.info("Entering EM processing")
             for ap in easymesh_node_list:
                 # 'sclient' is mesh main or satellite, 'nclient' is a network device
                 sclient_detail = self.request('admin/easymesh_network?form=mesh_sclient_detail&operation=read&mac='+ap['mac'], 'operation=read&mac='+ap['mac'])
