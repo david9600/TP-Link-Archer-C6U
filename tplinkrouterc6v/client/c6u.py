@@ -248,7 +248,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         self._url_ipv4_reservations = 'admin/dhcps?form=reservation&operation=load'
         self._url_ipv4_dhcp_leases = 'admin/dhcps?form=client&operation=load'
         self._url_smart_network = 'admin/smart_network?form=game_accelerator&operation=loadDevice'
-        self._url_easymesh_device_list = 'admin/easymesh_network?form=get_mesh_device_all&operation=read'
+        self._url_easymesh_device_list = 'admin/easymesh_network?form=get_mesh_device_list_all&operation=read'
         self._url_openvpn = 'admin/openvpn?form=config&operation=read'
         self._url_pptpd = 'admin/pptpd?form=config&operation=read'
         self._url_vpnconn_openvpn = 'admin/vpnconn?form=config&operation=list&vpntype=openvpn'
