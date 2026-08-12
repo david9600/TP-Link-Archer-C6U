@@ -255,7 +255,7 @@ class TPLinkMRClientBase(AbstractRouter):
                     # Select all enabled interfaces (normally one, but can be two as a result of failover/failback actions)
                     enabled_wan_intfs = [i for i in self._to_list(wan_aux_values) if int(i.get('enable')) == 1]
                     self._logger.info(enabled_wan_intfs)
-                    # If more than one enabled, need to query Layer 3 forwarding for interface in use.
+                    # If more than one enabled, request Layer 3 forwarding for interface in use.
                     if len(enabled_wan_intfs) > 0:
                         wan_fwd_acts = [
                             self.ActItem(self.ActItem.GET, 'L3_FORWARDING', attrs=['__ifAliasName']), 
@@ -271,10 +271,10 @@ class TPLinkMRClientBase(AbstractRouter):
                             self._logger.info('intf is %s', intf)
                             if intf.get('name') == activ_intf:
                                 self._logger.info('name matches activ_intf')
-                                self._logger.info('ipv6 addr is %s', intf.get_ipv6('X_TP_ExternalIPv6Address'))
-                                status.wan_ipv6_enabled = intf.get('X_TP_IPv6Enabled')
+                                status.wan_ipv6_enabled = intf.get('X_TP_IPv6Enabled') == '1'
+                                #self._logger.info('ipv6 addr is %s', intf.get_ipv6('X_TP_ExternalIPv6Address'))
                                 #status._wan_ipv4_addr = item.get_ip('externalIPAddress')
-                                #status._wan_ipv6_addr = item.get_ipv6('X_TP_ExternalIPv6Address')
+                                status._wan_ipv6_addr = item.get_ipv6('X_TP_ExternalIPv6Address')
                 else:
                     raise Exception("No IPv6 support")
             except Exception:
