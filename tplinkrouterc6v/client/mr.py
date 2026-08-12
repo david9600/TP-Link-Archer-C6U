@@ -262,8 +262,9 @@ class TPLinkMRClientBase(AbstractRouter):
                             self.ActItem(self.ActItem.GET, 'L3_IP6_FORWARDING', attrs=['__ifAliasName']),
                         ]
                         _, wan_fwd_values = self.req_act(wan_fwd_acts)
-                        ipv4_intf = wan_fwd_values[0].get('__ifAliasName')
-                        ipv6_intf = wan_fwd_values[1].get('__ifAliasName')
+                        self._logger.info(wan_fwd_values)
+                        ipv4_intf = wan_fwd_values.get('0').get('__ifAliasName')
+                        ipv6_intf = wan_fwd_values.get('1').get('__ifAliasName')
                         self._logger.info(ipv4_intf)
                         self._logger.info(ipv6_intf)
                 else:
@@ -271,7 +272,7 @@ class TPLinkMRClientBase(AbstractRouter):
             except Exception:
                 self._ipv6_support = False  
         
-        # For routers with USB modem support
+        # For routers with USB modem support, get modem state string.
         wan_usb_values = None
         if self._wan_usb_support:
             try:
