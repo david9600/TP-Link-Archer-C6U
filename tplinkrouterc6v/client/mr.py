@@ -249,7 +249,7 @@ class TPLinkMRClientBase(AbstractRouter):
         if self._ipv6_support:
             try:
                 wan_aux_acts = [self.ActItem(self.ActItem.GS, 'WAN_IP_CONN',
-                         attrs=['enable', 'externalIPAddress', 'X_TP_ExternalIPv6Address', 'name'])]
+                         attrs=['enable', 'externalIPAddress', 'X_TP_IPv6Enabled', 'X_TP_ExternalIPv6Address', 'name'])]
                 _, wan_aux_values = self.req_act(wan_aux_acts)
                 if wan_aux_values:
                     # Select all enabled interfaces (normally one, but can be two as a result of failover/failback actions)
@@ -263,12 +263,13 @@ class TPLinkMRClientBase(AbstractRouter):
                         ]
                         _, wan_fwd_values = self.req_act(wan_fwd_acts)
                         self._logger.info(wan_fwd_values)
-                        # To keep it simple, assume same interface is used for v4 & v6
+                        # To keep it simple, assume same active interface for v4 & v6
                         activ_intf = wan_fwd_values.get('1').get('__ifAliasName')
                         self._logger.info(activ_intf)
                         for item in self._to_list(wan_aux_values):
                             if item.get('name') == activ_intf:
-                                self._logger.info('X_TP_ExternalIPv6Address')
+                                self._logger.info(item.get_ipv6('X_TP_ExternalIPv6Address'))
+                                status.wan_ipv6_enabled = item.get('X_TP_IPv6Enabled')
                                 status._wan_ipv4_addr = item.get_ip('externalIPAddress')
                                 status._wan_ipv6_addr = item.get_ipv6('X_TP_ExternalIPv6Address')
                 else:
