@@ -251,7 +251,8 @@ class TPLinkMRClientBase(AbstractRouter):
                 _, wan_usb_values = self.req_act(wan_usb_acts)
                 self._logger.info(wan_usb_values)
                 if 'enable' not in wan_usb_values:
-                    raise Exception("No support for USB modem")
+                    self._logger.info("No USB modem support")
+                    raise Exception("No USB modem support")
                 
             except Exception:
                 self._wan_usb_support = False
