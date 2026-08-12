@@ -99,6 +99,8 @@ class TPLinkMRClientBase(AbstractRouter):
         self._ee = None
         self._seq = None
         self._url_rsa_key = 'cgi/getParm'
+        self._ipv6_support = True
+        self._wan_usb_support = True
 
         self._encryption = EncryptionWrapperMR()
 
@@ -242,10 +244,20 @@ class TPLinkMRClientBase(AbstractRouter):
         except Exception:
             pass
 
+        wan_usb_values = None
+        if self._wan_usb_support:
+            try:
+                wan_usb_acts = [self.ActItem(self.ActItem.GL, 'WAN_USB_3G_LINK_CF', attrs=['enable', 'cardName'])]
+                _, wan_usb_values = self.req_act(wan_usb_acts)
+                self._logger.info(wan_usb_values)
+                if 'enable' not in wan_usb_values:
+                    raise Exception("No support for USB modem")
+                
+            except Exception:
+                self._wan_usb_support = False
+        
         try:
-            wan_usb_acts = [self.ActItem(self.ActItem.GL, 'WAN_USB_3G_LINK_CF', attrs=['enable', 'cardName'])]
-            _, wan_usb_values = self.req_act(wan_usb_acts)
-            self._logger.info(wan_usb_values)
+            
             for item in self._to_list(wan_usb_values):
                 if int(item['enable']) == 1:
                     status.usb_modem_state = item.get('cardName', '')
