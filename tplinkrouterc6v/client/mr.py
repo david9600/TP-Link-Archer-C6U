@@ -169,8 +169,6 @@ class TPLinkMRClientBase(AbstractRouter):
                 'X_TP_TotalPacketsSent',
                 'X_TP_TotalPacketsReceived',
             ]),
-            self.ActItem(self.ActItem.GS, 'WAN_IP_CONN',
-                         attrs=['enable', 'X_TP_IPv6Enabled', 'X_TP_IPv6ConnStatus', 'X_TP_ExternalIPv6Address']),
         ]
         _, values = self.req_act(acts)
 
@@ -231,13 +229,6 @@ class TPLinkMRClientBase(AbstractRouter):
             devices[val['associatedDeviceMACAddress']].packets_sent = int(val['X_TP_TotalPacketsSent'])
             devices[val['associatedDeviceMACAddress']].packets_received = int(val['X_TP_TotalPacketsReceived'])
 
-        for item in self._to_list(values.get('6')):
-            if int(item['enable']) == 0 and values.get('6').__class__ == list:
-                continue
-            status.wan_ipv6_enabled = item.get('X_TP_IPv6Enabled') == '1'
-            status._wan_ipv6_conn_status = item.get('X_TP_IPv6ConnStatus', '')
-            status._wan_ipv6_addr = get_ipv6(item.get('X_TP_ExternalIPv6Address', '::'))
-
         try:
             stat_acts = [self.ActItem(self.ActItem.GL, 'STAT_ENTRY')]
             _, stat_values = self.req_act(stat_acts)
@@ -252,8 +243,9 @@ class TPLinkMRClientBase(AbstractRouter):
             pass
 
         try:
-            wan_usb_acts = [self.ActItem(self.ActItem.GL, 'WAN_USB_3G_LINK_CFG', attrs=['enable', 'cardName'])]
+            wan_usb_acts = [self.ActItem(self.ActItem.GL, 'WAN_USB_3G_LINK_CF', attrs=['enable', 'cardName'])]
             _, wan_usb_values = self.req_act(wan_usb_acts)
+            self._logger.info(wan_usb_values)
             for item in self._to_list(wan_usb_values):
                 if int(item['enable']) == 1:
                     status.usb_modem_state = item.get('cardName', '')
