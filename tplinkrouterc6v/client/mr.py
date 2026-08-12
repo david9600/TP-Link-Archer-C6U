@@ -244,7 +244,7 @@ class TPLinkMRClientBase(AbstractRouter):
         except Exception:
             pass
 
-        # Auxiliary WAN requests, for routers with IPv6 support and/or WAN failover.
+        # Auxiliary WAN requests, for routers with IPv6 support (and optionally, WAN failover)
         wan_aux_values = None
         if self._ipv6_support:
             try:
@@ -256,7 +256,7 @@ class TPLinkMRClientBase(AbstractRouter):
                     enabled_wan_intfs = [i for i in self._to_list(wan_aux_values) if int(i.get('enable')) == 1]
                     self._logger.info(enabled_wan_intfs)
                     # If more than one enabled, need to query Layer 3 forwarding for interface in use.
-                    if len(enabled_wan_intfs) == 1:
+                    if len(enabled_wan_intfs) > 1:
                         wan_fwd_acts = [
                             self.ActItem(self.ActItem.GET, 'L3_FORWARDING', attrs=['__ifAliasName']), 
                             self.ActItem(self.ActItem.GET, 'L3_IP6_FORWARDING', attrs=['__ifAliasName']),
