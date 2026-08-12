@@ -252,14 +252,14 @@ class TPLinkMRClientBase(AbstractRouter):
                 self._logger.info(wan_usb_values)
                 if not wan_usb_values:
                     raise Exception("No USB modem support")
-                for item in self._to_list(wan_usb_values)
+                for item in self._to_list(wan_usb_values):
                     self._logger.info(item)
-                    if int(item['enable']) == 0
+                    if int(item['enable']) == 0:
                         continue
                     status.usb_modem_state = item.get('cardName', '')
             except Exception:
                 self._wan_usb_support = False  
-                  
+
             self._logger.info(status)
 
         status.devices = list(devices.values())
