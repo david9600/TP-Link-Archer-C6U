@@ -244,13 +244,27 @@ class TPLinkMRClientBase(AbstractRouter):
         except Exception:
             pass
 
+        # Auxiliary WAN requests, for routers with IPv6 support and/or WAN failover.
+        wan_aux_values = None
+        if self._ipv6_support:
+            try:
+                wan_aux_acts = [self.ActItem(self.ActItem.GS, 'WAN_IP_CONN',
+                         attrs=['enable', 'externalIPAddress', 'X_TP_ExternalIPv6Address', 'name'])]
+                _, wan_aux_values = self.req_act(wan_aux_acts)
+                if wan_aux_values:
+                    enabled_wan_intfs = [i for i in self._to_list(wan_aux_values) if int(i.get('enable')) == 1]
+                    self._logger.info(enabled_wan_intfs)
+                else:
+                    raise Exception("No IPv6 support")
+            except Exception:
+                self._ipv6_support = False  
+        
         # For routers with USB modem support
         wan_usb_values = None
         if self._wan_usb_support:
             try:
                 wan_usb_acts = [self.ActItem(self.ActItem.GL, 'WAN_USB_3G_LINK_CFG', attrs=['enable', 'cardName'])]
                 _, wan_usb_values = self.req_act(wan_usb_acts)
-                self._logger.info(wan_usb_values)
                 if wan_usb_values:
                     for item in self._to_list(wan_usb_values):
                         if int(item['enable']) == 0:
@@ -261,7 +275,7 @@ class TPLinkMRClientBase(AbstractRouter):
             except Exception:
                 self._wan_usb_support = False  
 
-            self._logger.info(status)
+        self._logger.info(status)
 
         status.devices = list(devices.values())
         status.clients_total = status.wired_total + status.wifi_clients_total + status.guest_clients_total
