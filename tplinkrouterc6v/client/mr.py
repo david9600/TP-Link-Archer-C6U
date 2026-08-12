@@ -247,23 +247,12 @@ class TPLinkMRClientBase(AbstractRouter):
         wan_usb_values = None
         if self._wan_usb_support:
             try:
-                wan_usb_acts = [self.ActItem(self.ActItem.GL, 'WAN_USB_3G_LINK_CF', attrs=['enable', 'cardName'])]
+                wan_usb_acts = [self.ActItem(self.ActItem.GL, 'WAN_USB_3G_LINK_CFG', attrs=['enable', 'cardName'])]
                 _, wan_usb_values = self.req_act(wan_usb_acts)
                 self._logger.info(wan_usb_values)
-                if 'enable' not in wan_usb_values:
-                    self._logger.info("No USB modem support")
-                    raise Exception("No USB modem support")
-                
+
             except Exception:
-                self._wan_usb_support = False
-        
-        try:
-            
-            for item in self._to_list(wan_usb_values):
-                if int(item['enable']) == 1:
-                    status.usb_modem_state = item.get('cardName', '')
-        except Exception:
-            pass
+                self._wan_usb_support = False        
 
         status.devices = list(devices.values())
         status.clients_total = status.wired_total + status.wifi_clients_total + status.guest_clients_total
