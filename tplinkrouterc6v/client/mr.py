@@ -266,12 +266,13 @@ class TPLinkMRClientBase(AbstractRouter):
                         # To keep it simple, assume same active interface for v4 & v6
                         activ_intf = wan_fwd_values.get('1').get('__ifAliasName')
                         self._logger.info(activ_intf)
-                        for item in self._to_list(wan_aux_values):
-                            if item.get('name') == activ_intf:
-                                self._logger.info(item.get_ipv6('X_TP_ExternalIPv6Address'))
-                                status.wan_ipv6_enabled = item.get('X_TP_IPv6Enabled')
-                                status._wan_ipv4_addr = item.get_ip('externalIPAddress')
-                                status._wan_ipv6_addr = item.get_ipv6('X_TP_ExternalIPv6Address')
+                        self._logger('enabled wan intfs: ', enabled_wan_intfs)
+                        for intf in enabled_wan_intfs:
+                            if intf.get('name') == activ_intf:
+                                # self._logger.info(intf.get_ipv6('X_TP_ExternalIPv6Address'))
+                                #status.wan_ipv6_enabled = item.get('X_TP_IPv6Enabled')
+                                #status._wan_ipv4_addr = item.get_ip('externalIPAddress')
+                                #status._wan_ipv6_addr = item.get_ipv6('X_TP_ExternalIPv6Address')
                 else:
                     raise Exception("No IPv6 support")
             except Exception:
