@@ -252,7 +252,7 @@ class TPLinkMRClientBase(AbstractRouter):
                          attrs=['enable', 'externalIPAddress', 'X_TP_ExternalIPv6Address', 'name'])]
                 _, wan_aux_values = self.req_act(wan_aux_acts)
                 if wan_aux_values:
-                    enabled_wan_intfs = [i for i in self._to_list(wan_aux_values) if int(i.get('enable')) == 1]
+                    enabled_wan_intfs = [i for i in self._to_list(wan_aux_values) if int(i.get('enable')) == 0]
                     self._logger.info(enabled_wan_intfs)
                 else:
                     raise Exception("No IPv6 support")
