@@ -252,14 +252,13 @@ class TPLinkMRClientBase(AbstractRouter):
                         attrs=['enable', 'externalIPAddress', 'X_TP_IPv6Enabled', 'X_TP_ExternalIPv6Address', 'name'])]
                 _, wan_aux_values = self.req_act(wan_aux_acts)
             except Exception:
-                self._logger.info('exception 1')
                 wan_aux_values = None
                 self._ipv6_support = False  
 
         if wan_aux_values:
             # Select all enabled interfaces (normally one, but can be two as a result of failover/failback)
             enabled_wan_intfs = [i for i in self._to_list(wan_aux_values) if int(i.get('enable')) == 1]
-            self._logger.info('enabled wan intfs: %s', enabled_wan_intfs)
+            self._logger.debug('enabled wan intfs: %s', enabled_wan_intfs)
             # If more than one enabled, query Layer 3 forwarding for interface in use.
             if len(enabled_wan_intfs) > 1:
                 try:
@@ -268,13 +267,13 @@ class TPLinkMRClientBase(AbstractRouter):
                         self.ActItem(self.ActItem.GET, 'L3_IP6_FORWARDING', attrs=['__ifAliasName']),
                     ]
                     _, wan_fwd_values = self.req_act(wan_fwd_acts)
-                    # To keep it simple, assume same active interface for v4 & v6
+                    # To keep it simple, assume v6 active interface also used for v4
                     activ_intf = wan_fwd_values.get('1').get('__ifAliasName')
-                    self._logger.info('active intf: %s', activ_intf)
+                    self._logger.debug('active intf: %s', activ_intf)
                     for intf in self._to_list(enabled_wan_intfs):
-                        self._logger.info('intf is %s', intf)
+                        self._logger.debug('intf in for-loop is %s', intf)
                         if intf.get('name') == activ_intf:
-                            self._logger.info('name matches activ_intf')
+                            self._logger.debug('name matches activ_intf')
                             status.wan_ipv6_enabled = bool(int(intf.get('X_TP_IPv6Enabled', '0')))
                             status._wan_ipv4_addr = get_ip(intf.get('externalIPAddress', '0.0.0.0'))
                             status._wan_ipv6_addr = get_ipv6(intf.get('X_TP_ExternalIPv6Address', '::'))
@@ -282,7 +281,7 @@ class TPLinkMRClientBase(AbstractRouter):
                     # Skip if Layer 3 forwarding details not retrieved.
                     pass
             else:
-                self._logger.info('single active interface')
+                self._logger.debug('single active interface')
                 for item in self._to_list(wan_aux_values):
                     if int(item['enable']) == 0:
                         continue
@@ -305,7 +304,7 @@ class TPLinkMRClientBase(AbstractRouter):
             except Exception:
                 self._wan_usb_support = False  
 
-        self._logger.info(status)
+        # self._logger.info(status)
 
         status.devices = list(devices.values())
         status.clients_total = status.wired_total + status.wifi_clients_total + status.guest_clients_total
