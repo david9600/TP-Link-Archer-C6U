@@ -254,7 +254,7 @@ class TPLinkMRClientBase(AbstractRouter):
                 if wan_aux_values:
                     # Select all enabled interfaces (normally one, but can be two as a result of failover/failback actions)
                     enabled_wan_intfs = [i for i in self._to_list(wan_aux_values) if int(i.get('enable')) == 1]
-                    self._logger.info(enabled_wan_intfs)
+                    self._logger.info('enabled wan intfs: %s', enabled_wan_intfs)
                     # If more than one enabled, request Layer 3 forwarding for interface in use.
                     if len(enabled_wan_intfs) > 0:
                         wan_fwd_acts = [
@@ -262,10 +262,10 @@ class TPLinkMRClientBase(AbstractRouter):
                             self.ActItem(self.ActItem.GET, 'L3_IP6_FORWARDING', attrs=['__ifAliasName']),
                         ]
                         _, wan_fwd_values = self.req_act(wan_fwd_acts)
-                        self._logger.info(wan_fwd_values)
+                        self._logger.info('wan forwarding values: %s', wan_fwd_values)
                         # To keep it simple, assume same active interface for v4 & v6
                         activ_intf = wan_fwd_values.get('1').get('__ifAliasName')
-                        self._logger.info(activ_intf)
+                        self._logger.info('active intfs: %s', activ_intf)
                         self._logger.info('enabled wan intfs: %s', enabled_wan_intfs)
                         for intf in self._to_list(enabled_wan_intfs):
                             self._logger.info('intf is %s', intf)
