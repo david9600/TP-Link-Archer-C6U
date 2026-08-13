@@ -248,7 +248,7 @@ class TPLinkMRClientBase(AbstractRouter):
         wan_aux_values = None
         if self._ipv6_support:
             try:
-                wan_aux_acts = [self.ActItem(self.ActItem.GS, 'WAN_IP_CONN',
+                wan_aux_acts = [self.ActItem(self.ActItem.GS, 'WAN_IP_CON',
                         attrs=['enable', 'externalIPAddress', 'X_TP_IPv6Enabled', 'X_TP_ExternalIPv6Address', 'name'])]
                 _, wan_aux_values = self.req_act(wan_aux_acts)
             except Exception:
