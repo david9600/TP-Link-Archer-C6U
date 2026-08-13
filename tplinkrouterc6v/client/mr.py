@@ -278,6 +278,7 @@ class TPLinkMRClientBase(AbstractRouter):
                             status._wan_ipv6_addr = intf.get_ipv6('X_TP_ExternalIPv6Address')
                     
             except Exception:
+                self._logger.info('exception handler')
                 self._ipv6_support = False  
         
         # For routers with USB modem support, get modem state string.
