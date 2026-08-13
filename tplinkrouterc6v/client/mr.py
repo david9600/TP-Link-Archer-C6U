@@ -253,7 +253,7 @@ class TPLinkMRClientBase(AbstractRouter):
                 _, wan_aux_values = self.req_act(wan_aux_acts)
                 if wan_aux_values:
                     for item in self._to_list(wan_aux_values):
-                        if int(item['enable']) == 0 and values.__class__ == list:
+                        if int(item['enable']) == 0 and wan_aux_values.__class__ == list:
                             continue
                         status.wan_ipv6_enabled = bool(int(item.get('X_TP_IPv6Enabled', '0')))
                         status._wan_ipv6_addr = get_ipv6(item.get('X_TP_ExternalIPv6Address', '::'))
