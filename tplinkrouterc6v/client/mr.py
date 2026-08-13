@@ -261,6 +261,7 @@ class TPLinkMRClientBase(AbstractRouter):
             self._logger.debug('enabled wan intfs: %s', enabled_wan_intfs)
             # If more than one enabled, query Layer 3 forwarding for interface in use.
             if len(enabled_wan_intfs) > 1:
+                self._logger.info('more than one intf enabled')
                 try:
                     wan_fwd_acts = [
                         self.ActItem(self.ActItem.GET, 'L3_FORWARDING', attrs=['__ifAliasName']), 
@@ -271,7 +272,7 @@ class TPLinkMRClientBase(AbstractRouter):
                     activ_intf = wan_fwd_values.get('1').get('__ifAliasName')
                     self._logger.debug('active intf: %s', activ_intf)
                     for intf in self._to_list(enabled_wan_intfs):
-                        self._logger.debug('intf in for-loop is %s', intf)
+                        self._logger.info('intf in for-loop is %s', intf)
                         if intf.get('name') == activ_intf:
                             self._logger.debug('name matches activ_intf')
                             status.wan_ipv6_enabled = bool(int(intf.get('X_TP_IPv6Enabled', '0')))
