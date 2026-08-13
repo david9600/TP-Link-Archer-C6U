@@ -262,7 +262,7 @@ class TPLinkMRClientBase(AbstractRouter):
             except Exception:
                 self._ipv6_support = False
 
-        self._logger.info(status)
+        # self._logger.info(status)
 
         status.devices = list(devices.values())
         status.clients_total = status.wired_total + status.wifi_clients_total + status.guest_clients_total
