@@ -279,8 +279,10 @@ class TPLinkMRClientBase(AbstractRouter):
                             status._wan_ipv4_addr = get_ip(intf.get('externalIPAddress', '0.0.0.0'))
                             status._wan_ipv6_addr = get_ipv6(intf.get('X_TP_ExternalIPv6Address', '::'))
                 except:
+                    # Skip if Layer 3 forwarding details not retrieved.
                     pass
             else:
+                self._logger.info('single active interface')
                 for item in self._to_list(wan_aux_values):
                     if int(item['enable']) == 0:
                         continue
