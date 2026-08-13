@@ -275,7 +275,7 @@ class TPLinkMRClientBase(AbstractRouter):
                             status.wan_ipv6_enabled = bool(int(intf.get('X_TP_IPv6Enabled', '0')))
                             #self._logger.info('ipv6 addr is %s', intf.get_ipv6('X_TP_ExternalIPv6Address'))
                             #status._wan_ipv4_addr = item.get_ip('externalIPAddress')
-                            status._wan_ipv6_addr = intf.get_ipv6('X_TP_ExternalIPv6Address')
+                            status._wan_ipv6_addr = intf.get_ipv6('X_TP_ExternalIPv6Address', '::')
                     
             except Exception:
                 self._logger.info('exception handler')
