@@ -244,66 +244,23 @@ class TPLinkMRClientBase(AbstractRouter):
         except Exception:
             pass
 
-        # Auxiliary WAN requests, for routers with IPv6 support (and optionally, WAN failover)
+        # Auxiliary WAN requests, for routers with IPv6 support
         wan_aux_values = None
         if self._ipv6_support:
             try:
                 wan_aux_acts = [self.ActItem(self.ActItem.GS, 'WAN_IP_CONN',
-                        attrs=['enable', 'externalIPAddress', 'X_TP_IPv6Enabled', 'X_TP_ExternalIPv6Address', 'name'])]
+                        attrs=['enable', 'X_TP_IPv6Enabled', 'X_TP_ExternalIPv6Address'])]
                 _, wan_aux_values = self.req_act(wan_aux_acts)
-            except Exception:
-                self._logger.info('exception 1')
-                wan_aux_values = None
-                self._ipv6_support = False  
 
-        if wan_aux_values:
-            # Select all enabled interfaces (normally one, but can be two as a result of failover/failback)
-            enabled_wan_intfs = [i for i in self._to_list(wan_aux_values) if int(i.get('enable')) == 1]
-            self._logger.info('enabled wan intfs: %s', enabled_wan_intfs)
-            # If more than one enabled, query Layer 3 forwarding for interface in use.
-            if len(enabled_wan_intfs) > 1:
-                try:
-                    wan_fwd_acts = [
-                        self.ActItem(self.ActItem.GET, 'L3_FORWARDING', attrs=['__ifAliasName']), 
-                        self.ActItem(self.ActItem.GET, 'L3_IP6_FORWARDING', attrs=['__ifAliasName']),
-                    ]
-                    _, wan_fwd_values = self.req_act(wan_fwd_acts)
-                    # To keep it simple, assume same active interface for v4 & v6
-                    activ_intf = wan_fwd_values.get('1').get('__ifAliasName')
-                    self._logger.info('active intf: %s', activ_intf)
-                    for intf in self._to_list(enabled_wan_intfs):
-                        self._logger.info('intf is %s', intf)
-                        if intf.get('name') == activ_intf:
-                            self._logger.info('name matches activ_intf')
-                            status.wan_ipv6_enabled = bool(int(intf.get('X_TP_IPv6Enabled', '0')))
-                            status._wan_ipv4_addr = get_ip(intf.get('externalIPAddress', '0.0.0.0'))
-                            status._wan_ipv6_addr = get_ipv6(intf.get('X_TP_ExternalIPv6Address', '::'))
-                except:
-                    # Skip if Layer 3 forwarding details not retrieved.
-                    pass
-            else:
-                self._logger.info('single active interface')
-                for item in self._to_list(wan_aux_values):
-                    if int(item['enable']) == 0:
-                        continue
-                    status.wan_ipv6_enabled = bool(int(item.get('X_TP_IPv6Enabled', '0')))
-                    status._wan_ipv6_addr = get_ipv6(item.get('X_TP_ExternalIPv6Address', '::'))
-
-        # For routers with USB modem support, get modem state string.
-        wan_usb_values = None
-        if self._wan_usb_support:
-            try:
-                wan_usb_acts = [self.ActItem(self.ActItem.GL, 'WAN_USB_3G_LINK_CFG', attrs=['enable', 'cardName'])]
-                _, wan_usb_values = self.req_act(wan_usb_acts)
-                if wan_usb_values:
-                    for item in self._to_list(wan_usb_values):
-                        if int(item['enable']) == 0:
+                if wan_aux_values:
+                    for item in self._to_list(wan_aux_values):
+                        if int(item['enable']) == 0 and values.__class__ == list:
                             continue
-                        status.usb_modem_state = item.get('cardName', '')
-                else:
-                    raise Exception("No USB modem support")
+                            status.wan_ipv6_enabled = bool(int(item.get('X_TP_IPv6Enabled', '0')))
+                            status._wan_ipv6_addr = get_ipv6(item.get('X_TP_ExternalIPv6Address', '::'))
+
             except Exception:
-                self._wan_usb_support = False  
+                self._ipv6_support = False
 
         self._logger.info(status)
 
