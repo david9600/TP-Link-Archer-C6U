@@ -285,7 +285,7 @@ class TPLinkMRClientBase(AbstractRouter):
                     self._logger.debug('ipv4 intf: %s', ipv4_intf)
                     self._logger.debug('ipv6 intf: %s', ipv6_intf)
                     for intf in self._to_list(enabled_wan_intfs):
-                        self._logger.info('intf in for-loop is %s', intf)
+                        self._logger.debug('intf in for-loop is %s', intf)
                         if intf.get('name') == ipv4_intf:
                             status._wan_ipv4_addr = get_ip(intf.get('externalIPAddress', '0.0.0.0'))
                         if intf.get('name') == ipv6_intf:
