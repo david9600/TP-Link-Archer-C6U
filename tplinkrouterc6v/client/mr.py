@@ -136,6 +136,12 @@ class TPLinkMRClientBase(AbstractRouter):
         ]
         self.req_act(acts)
 
+    def renew(self) -> None:
+        acts = [
+            self.ActItem(self.ActItem.OP, 'ACT_REBOOT')
+        ]
+        self.req_act(acts)
+
     def get_firmware(self) -> Firmware:
         acts = [
             self.ActItem(self.ActItem.GET, 'IGD_DEV_INFO', attrs=[
