@@ -256,7 +256,7 @@ class TPLinkMRClientBase(AbstractRouter):
                 self._ipv6_support = False  
 
         if wan_aux_values:
-            # Select all enabled interfaces (normally one, but can be two as a result of failover/failback)
+            # Select all enabled interfaces (normally one, but can be two during failover/failback)
             enabled_wan_intfs = [i for i in self._to_list(wan_aux_values) if int(i.get('enable')) == 1]
             self._logger.debug('enabled wan intfs: %s', enabled_wan_intfs)
             # If more than one enabled, query Layer 3 forwarding for active interface of each IP version
@@ -283,7 +283,7 @@ class TPLinkMRClientBase(AbstractRouter):
                     # Skip if Layer 3 forwarding details not retrieved.
                     pass
             else:
-                self._logger.debug('single active interface')
+                self._logger.debug('one active interface')
                 for item in self._to_list(wan_aux_values):
                     if int(item['enable']) == 0:
                         continue
