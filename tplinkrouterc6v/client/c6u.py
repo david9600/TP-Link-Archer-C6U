@@ -715,11 +715,14 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         data = self.request(
             self._url_ipv4_dhcps, 'operation=read'
         )
-        _start = data.get('ipaddr_start')
-        _end = data.get('ipaddr_end')
+        leasetime = data.get('leasetime')
+        gateway = data.get('gateway')
+        start = data.get('ipaddr_start')
+        end = data.get('ipaddr_end')
         self.request(
             self._url_ipv4_dhcps,
-            urlencode({'operation': 'write', 'enable': 'on' if enable else 'off', 'ipaddr_start': _start, 'ipaddr_end': _end }),
+            urlencode({'operation': 'write', 'enable': 'on' if enable else 'off', 
+                'leasetime': leasetime, 'gateway': gateway, 'ipaddr_start': start, 'ipaddr_end': end }),
         )
 
     @staticmethod
