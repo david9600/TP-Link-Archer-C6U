@@ -86,6 +86,7 @@ class TplinkC80Router(AbstractRouter):
             self._session.verify = False
         self._encryption = EncryptionState()
         self._wifi_request = None
+        self._ipv6_support = True
 
     def supports(self) -> bool:
         try:
@@ -140,8 +141,8 @@ class TplinkC80Router(AbstractRouter):
         if self._wifi_request is None:
             request = '13|1,0,0'
             self._wifi_request = request in self._return_data_block(request)
-
-        return self._get_status_with_wifi() if self._wifi_request else self._get_status_without_wifi()
+        return self._get_status_without_wifi()
+        # return self._get_status_with_wifi() if self._wifi_request else self._get_status_without_wifi()
 
     def _get_status_with_wifi(self) -> Status:
         mac_info_request = "1|1,0,0"
@@ -204,6 +205,7 @@ class TplinkC80Router(AbstractRouter):
                                 status.guest_clients_total + status.iot_clients_total)
 
         status.devices = mapped_devices
+        
         return status
 
     def _get_status_without_wifi(self) -> Status:
@@ -240,6 +242,22 @@ class TplinkC80Router(AbstractRouter):
         status.clients_total = len(devices)
         status.wifi_2g_enable = True
         status.conn_type = 'Router/AP'
+
+        if self._ipv6_support:
+            ipv6_request_text = '#'.join([
+                '45|1,0,0',
+                '48|1,0,0',
+            ])
+            data_blocks = self._return_data_block(ipv6_request_text)
+            self._logger.info('data_blocks = %s', data_blocks)
+            if data_blocks:
+                ipv6_wan_info = self._parse_last_values_from_block(data_blocks.get('45|1,0,0', []))
+                ipv6_site_info = self._parse_last_values_from_block(data_blocks.get('48|1,0,0', []))
+                self._logger.info('ipv6_wan_info is %s', ipv6_wan_info)
+                self._logger.info('ipv6_site_info is %s', ipv6_site_info)
+            else:
+                self._ipv6_support = False
+
         return status
 
     def reboot(self) -> None:
