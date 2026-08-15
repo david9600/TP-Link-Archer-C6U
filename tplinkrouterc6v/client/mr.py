@@ -148,6 +148,12 @@ class TPLinkMRClientBase(AbstractRouter):
 
     def renew(self) -> None:
         acts = [
+            self.ActItem(self.ActItem.GL, 'WAN_COMMON_INTF_CFG', attrs=['WANAccessType'])
+        ]
+        _, values = self.req_act(acts)
+        self._logger.info('values in renew: %s', values)
+
+        acts = [
             self.ActItem(self.ActItem.OP, 'ACT_DHCP_RELEASE', '2,1,1,0,0,0')
         ]
         self.req_act(acts)
@@ -156,7 +162,7 @@ class TPLinkMRClientBase(AbstractRouter):
             self.ActItem(self.ActItem.CGI, '/cgi/clearBusy')
         ]
         self.req_act(acts)
-        
+
         acts = [
             self.ActItem(self.ActItem.OP, 'ACT_DHCP_RENEW', '2,1,1,0,0,0')
         ]
