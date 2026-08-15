@@ -256,6 +256,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         self._url_vpn_client_enable = 'admin/vpn?form=enable'
         self._url_vpn_client_server = 'admin/vpn?form=server'
         self._url_vpn_client_user_list = 'admin/vpn?form=vpn_user_list'
+        self._url_dhcps_enable = 'admin/dhcps?form=setting'
         referer = '{}/webpages/index.html'.format(self.host)
         self._headers_request = {'Referer': referer, 'Origin': self.host}
         self._headers_login = {'Referer': referer, 'Content-Type': 'application/x-www-form-urlencoded'}
@@ -708,6 +709,12 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             'old': dumps(old),
         })
         self.request(self._url_vpn_client_user_list, payload)
+
+    def set_dhcp_srv(self, enable: bool) -> None:
+        self.request(
+            self._url_dhcps_enable,
+            urlencode({'operation': 'write', 'enable': 'on' if enable else 'off'}),
+        )
 
     @staticmethod
     def _str2bool(v) -> bool | None:
