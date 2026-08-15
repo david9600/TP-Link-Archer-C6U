@@ -249,7 +249,7 @@ class TPLinkMRClientBase(AbstractRouter):
         if self._ipv6_support:
             try:
                 wan_aux_acts = [self.ActItem(self.ActItem.GS, 'WAN_IP_CONN',
-                        attrs=['enable', 'externalIPAddress', 'X_TP_IPv6Enabled', 'X_TP_ExternalIPv6Address', 'name'])]
+                        attrs=['enable', 'connectionStatus', 'externalIPAddress', 'X_TP_IPv6Enabled', 'X_TP_ExternalIPv6Address', 'name'])]
                 _, wan_aux_values = self.req_act(wan_aux_acts)
             except Exception:
                 wan_aux_values = None
@@ -276,6 +276,7 @@ class TPLinkMRClientBase(AbstractRouter):
                         self._logger.debug('intf in for-loop is %s', intf)
                         if intf.get('name') == ipv4_intf:
                             status._wan_ipv4_addr = get_ip(intf.get('externalIPAddress', '0.0.0.0'))
+                            status.ewan_connected = intf.get('connectionStatus') == 'Connected'
                         if intf.get('name') == ipv6_intf:
                             status.wan_ipv6_enabled = bool(int(intf.get('X_TP_IPv6Enabled', '0')))
                             status._wan_ipv6_addr = get_ipv6(intf.get('X_TP_ExternalIPv6Address', '::'))
@@ -472,7 +473,7 @@ class TPLinkMRClientBase(AbstractRouter):
         ]
         self.req_act(acts)
 
-    def release(self) -> None:
+    def set_ewan_connect(self enable: bool) -> None:
         # Find interface number of Ethernet uplink
         acts = [
             self.ActItem(self.ActItem.GL, 'WAN_COMMON_INTF_CFG', attrs=['WANAccessType'])
@@ -484,26 +485,14 @@ class TPLinkMRClientBase(AbstractRouter):
             if intf.get('WANAccessType') == 'Ethernet':
                 break
 
-        acts = [
-            self.ActItem(self.ActItem.OP, 'ACT_DHCP_RELEASE', '{},1,1,0,0,0'.format(i))
-        ]
-        self.req_act(acts)
-
-    def renew(self) -> None:
-        # Find interface number of Ethernet uplink
-        acts = [
-            self.ActItem(self.ActItem.GL, 'WAN_COMMON_INTF_CFG', attrs=['WANAccessType'])
-        ]
-        _, values = self.req_act(acts)
-        i = 0
-        for intf in self._to_list(values):
-            i += 1
-            if intf.get('WANAccessType') == 'Ethernet':
-                break
-
-        acts = [
-            self.ActItem(self.ActItem.OP, 'ACT_DHCP_RENEW', '{},1,1,0,0,0'.format(i))
-        ]
+        if enable:
+            acts = [
+                self.ActItem(self.ActItem.OP, 'ACT_DHCP_RENEW', '{},1,1,0,0,0'.format(i))
+            ]
+        else:
+            acts = [
+                self.ActItem(self.ActItem.OP, 'ACT_DHCP_RELEASE', '{},1,1,0,0,0'.format(i))
+            ]
         self.req_act(acts)
 
     @staticmethod
