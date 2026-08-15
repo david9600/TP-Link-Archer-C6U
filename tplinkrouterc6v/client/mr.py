@@ -136,43 +136,6 @@ class TPLinkMRClientBase(AbstractRouter):
         ]
         self.req_act(acts)
 
-    def release(self) -> None:
-        acts = [
-            self.ActItem(self.ActItem.CGI, '/cgi/clearBusy')
-        ]
-        self.req_act(acts)
-        acts = [
-            self.ActItem(self.ActItem.OP, 'ACT_DHCP_RELEASE', '2,1,1,0,0,0')
-        ]
-        self.req_act(acts)
-
-    def renew(self) -> None:
-        # Find interface number of Ethernet uplink
-        acts = [
-            self.ActItem(self.ActItem.GL, 'WAN_COMMON_INTF_CFG', attrs=['WANAccessType'])
-        ]
-        _, values = self.req_act(acts)
-        i = 0
-        for intf in self._to_list(values):
-            i += 1
-            if intf.get('WANAccessType') == 'Ethernet':
-                break
-
-        acts = [
-            self.ActItem(self.ActItem.OP, 'ACT_DHCP_RELEASE', '{},1,1,0,0,0'.format(i))
-        ]
-        self.req_act(acts)
-
-        acts = [
-            self.ActItem(self.ActItem.CGI, '/cgi/clearBusy')
-        ]
-        self.req_act(acts)
-
-        acts = [
-            self.ActItem(self.ActItem.OP, 'ACT_DHCP_RENEW', '{},1,1,0,0,0'.format(i))
-        ]
-        self.req_act(acts)
-
     def get_firmware(self) -> Firmware:
         acts = [
             self.ActItem(self.ActItem.GET, 'IGD_DEV_INFO', attrs=[
@@ -482,6 +445,58 @@ class TPLinkMRClientBase(AbstractRouter):
             self.ActItem(self.ActItem.SET, vpn.value, attrs=['enable={}'.format(int(enable))])
         ]
 
+        self.req_act(acts)
+
+    def set_wan_bkup(self, enable: bool) -> None:
+        # Find interface number of USB uplink
+        acts = [
+            self.ActItem(self.ActItem.GL, 'WAN_COMMON_INTF_CFG', attrs=['WANAccessType'])
+        ]
+        _, values = self.req_act(acts)
+
+        i = 0
+        for intf in self._to_list(values):
+            i += 1
+            if 'USB' in intf.get('WANAccessType'):
+                break
+
+        acts = [
+            self.ActItem(self.ActItem.SET, 'WAN_USB_3G_LINK_CFG', '{},1,1,0,0,0'.format(i), attrs=['backupEnable={}'.format(int(enable))])
+        ]
+        self.req_act(acts)
+
+    def release(self) -> None:
+        # Find interface number of Ethernet uplink
+        acts = [
+            self.ActItem(self.ActItem.GL, 'WAN_COMMON_INTF_CFG', attrs=['WANAccessType'])
+        ]
+        _, values = self.req_act(acts)
+        i = 0
+        for intf in self._to_list(values):
+            i += 1
+            if intf.get('WANAccessType') == 'Ethernet':
+                break
+
+        acts = [
+            self.ActItem(self.ActItem.OP, 'ACT_DHCP_RELEASE', '{},1,1,0,0,0'.format(i))
+        ]
+        self.req_act(acts)
+
+    def renew(self) -> None:
+        # Find interface number of Ethernet uplink
+        acts = [
+            self.ActItem(self.ActItem.GL, 'WAN_COMMON_INTF_CFG', attrs=['WANAccessType'])
+        ]
+        _, values = self.req_act(acts)
+        i = 0
+        for intf in self._to_list(values):
+            i += 1
+            if intf.get('WANAccessType') == 'Ethernet':
+                break
+
+        acts = [
+            self.ActItem(self.ActItem.OP, 'ACT_DHCP_RENEW', '{},1,1,0,0,0'.format(i))
+        ]
         self.req_act(acts)
 
     @staticmethod
