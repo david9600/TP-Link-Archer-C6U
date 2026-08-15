@@ -259,6 +259,10 @@ class TPLinkMRClientBase(AbstractRouter):
             # Select all enabled interfaces (normally one, but can be two during failover/failback)
             enabled_wan_intfs = [i for i in self._to_list(wan_aux_values) if int(i.get('enable')) == 1]
             self._logger.debug('enabled wan intfs: %s', enabled_wan_intfs)
+            for intf in enabled_wan_intfs:
+                if 'USB' in intf.get('name'):
+                    continue
+                status.ewan_connected = intf.get('connectionStatus') == 'Connected'
             # If more than one enabled, query Layer 3 forwarding for active interface of each IP version
             if len(enabled_wan_intfs) > 1:
                 self._logger.info('more than one intf enabled')
