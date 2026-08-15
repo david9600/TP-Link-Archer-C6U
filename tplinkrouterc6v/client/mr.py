@@ -147,6 +147,7 @@ class TPLinkMRClientBase(AbstractRouter):
         self.req_act(acts)
 
     def renew(self) -> None:
+        # Find the interface number for Ethernet uplink
         acts = [
             self.ActItem(self.ActItem.GL, 'WAN_COMMON_INTF_CFG', attrs=['WANAccessType'])
         ]
@@ -157,10 +158,9 @@ class TPLinkMRClientBase(AbstractRouter):
             i += 1
             if intf.get('WANAccessType') == 'Ethernet':
                 break
-        self._logger.info('intf no. is: %s', i)
 
         acts = [
-            self.ActItem(self.ActItem.OP, 'ACT_DHCP_RELEASE', '2,1,1,0,0,0')
+            self.ActItem(self.ActItem.OP, 'ACT_DHCP_RELEASE', '{},1,1,0,0,0'.format(i))
         ]
         self.req_act(acts)
 
@@ -170,7 +170,7 @@ class TPLinkMRClientBase(AbstractRouter):
         self.req_act(acts)
 
         acts = [
-            self.ActItem(self.ActItem.OP, 'ACT_DHCP_RENEW', '2,1,1,0,0,0')
+            self.ActItem(self.ActItem.OP, 'ACT_DHCP_RENEW', '{},1,1,0,0,0'.format(i))
         ]
         self.req_act(acts)
 
