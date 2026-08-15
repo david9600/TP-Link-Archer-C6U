@@ -209,12 +209,12 @@ class TplinkC80Router(AbstractRouter):
 
         if self._ipv6_support:
             ipv6_request_text = '#'.join([
-                IPV6_WAN_REQUEST,
+                RouterConstants.IPV6_WAN_REQUEST,
             ])
             data_blocks = self._return_data_block(ipv6_request_text)
             self._logger.info('data_blocks = %s', data_blocks)
             if data_blocks:
-                ipv6_wan_info = self._parse_last_values_from_block(data_blocks.get('45|1,0,0', []))
+                ipv6_wan_info = self._parse_last_values_from_block(data_blocks.get(RouterConstants.IPV6_WAN_REQUEST, []))
                 self._logger.info('ipv6_wan_info is %s', ipv6_wan_info) 
                 status.wan_ipv6_enabled = ipv6_wan_info.get('status') != '0'
                 status._wan_ipv6_addr = get_ipv6(ipv6_wan_info.get('globalIp', '::'))
@@ -260,12 +260,12 @@ class TplinkC80Router(AbstractRouter):
 
         if self._ipv6_support:
             ipv6_request_text = '#'.join([
-                IPV6_WAN_REQUEST,
+                RouterConstants.IPV6_WAN_REQUEST,
             ])
             data_blocks = self._return_data_block(ipv6_request_text)
             self._logger.info('data_blocks = %s', data_blocks)
             if data_blocks:
-                ipv6_wan_info = self._parse_last_values_from_block(data_blocks.get('45|1,0,0', []))
+                ipv6_wan_info = self._parse_last_values_from_block(data_blocks.get(RouterConstants.IPV6_WAN_REQUEST, []))
                 self._logger.info('ipv6_wan_info is %s', ipv6_wan_info) 
                 status.wan_ipv6_enabled = ipv6_wan_info.get('status') != '0'
                 status._wan_ipv6_addr = get_ipv6(ipv6_wan_info.get('globalIp', '::'))
