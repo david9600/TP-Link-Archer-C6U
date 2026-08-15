@@ -464,7 +464,9 @@ class TPLinkMRClientBase(AbstractRouter):
 
         acts = [
             self.ActItem(self.ActItem.SET, 'WAN_USB_3G_LINK_CFG', '{},1,1,0,0,0'.format(i), 
-                attrs=['backupEnable={}'.format(int(enable)), 'ispIdx=5', 'manualAPN=1', 'dialNumber=*99***1#', 'APN=internet'])
+                attrs=['backupEnable={}'.format(int(enable)), 'ispIdx=5', 'manualAPN=1', 'dialNumber=*99***1#', 'APN=internet']),
+            self.ActItem(self.ActItem.SET, 'WAN_IP_CONN', '{},1,1,0,0,0'.format(i), 
+                attrs=['connectionTrigger=AlwaysOn']),
         ]
         self.req_act(acts)
 
