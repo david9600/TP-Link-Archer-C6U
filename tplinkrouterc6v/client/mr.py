@@ -280,7 +280,6 @@ class TPLinkMRClientBase(AbstractRouter):
                         self._logger.debug('intf in for-loop is %s', intf)
                         if intf.get('name') == ipv4_intf:
                             status._wan_ipv4_addr = get_ip(intf.get('externalIPAddress', '0.0.0.0'))
-                            status.ewan_connected = intf.get('connectionStatus') == 'Connected'
                         if intf.get('name') == ipv6_intf:
                             status.wan_ipv6_enabled = bool(int(intf.get('X_TP_IPv6Enabled', '0')))
                             status._wan_ipv6_addr = get_ipv6(intf.get('X_TP_ExternalIPv6Address', '::'))
@@ -305,7 +304,7 @@ class TPLinkMRClientBase(AbstractRouter):
                     for item in self._to_list(wan_usb_values):
                         if int(item['enable']) == 0:
                             continue
-                        self._logger.info('enabled item is %s', item)
+                        # self._logger.info('enabled item is %s', item)
                         status.wan_bkup_enable = bool(int(item.get('backupEnable')))
                         status.usb_modem_state = item.get('cardName', '')
                 else:
