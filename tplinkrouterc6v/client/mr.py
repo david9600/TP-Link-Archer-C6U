@@ -148,9 +148,15 @@ class TPLinkMRClientBase(AbstractRouter):
 
     def renew(self) -> None:
         acts = [
+            self.ActItem(self.ActItem.OP, 'ACT_DHCP_RELEASE', '2,1,1,0,0,0')
+        ]
+        self.req_act(acts)
+
+        acts = [
             self.ActItem(self.ActItem.CGI, '/cgi/clearBusy')
         ]
         self.req_act(acts)
+        
         acts = [
             self.ActItem(self.ActItem.OP, 'ACT_DHCP_RENEW', '2,1,1,0,0,0')
         ]
