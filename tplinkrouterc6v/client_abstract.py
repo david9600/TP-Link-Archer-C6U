@@ -54,3 +54,7 @@ class AbstractRouter(ABC):
     @abstractmethod
     def set_wifi(self, wifi: Connection, enable: bool) -> None:
         pass
+
+    @abstractmethod
+    def set_wan_bkup(self, enable: bool) -> None:
+        pass
