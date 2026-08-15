@@ -207,7 +207,7 @@ class TplinkC80Router(AbstractRouter):
 
         if self._ipv6_support:
             ipv6_request_text = '#'.join([
-                '45|1,0,0',
+                '77|1,0,0',
             ])
             data_blocks = self._return_data_block(ipv6_request_text)
             self._logger.info('data_blocks = %s', data_blocks)
