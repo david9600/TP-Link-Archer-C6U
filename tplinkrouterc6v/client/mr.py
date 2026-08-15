@@ -155,7 +155,7 @@ class TPLinkMRClientBase(AbstractRouter):
         i = 0
         for intf in self._to_list(values):
             i += 1
-            if i.get('WANAccessType') == 'Ethernet':
+            if intf.get('WANAccessType') == 'Ethernet':
                 break
         self._logger.info('intf no. is: %s', i)
 
