@@ -473,7 +473,7 @@ class TPLinkMRClientBase(AbstractRouter):
         ]
         self.req_act(acts)
 
-    def set_ewan_connect(self enable: bool) -> None:
+    def set_ewan_connect(self, enable: bool) -> None:
         # Find interface number of Ethernet uplink
         acts = [
             self.ActItem(self.ActItem.GL, 'WAN_COMMON_INTF_CFG', attrs=['WANAccessType'])
