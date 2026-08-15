@@ -290,7 +290,7 @@ class TPLinkMRClientBase(AbstractRouter):
                     status.wan_ipv6_enabled = bool(int(item.get('X_TP_IPv6Enabled', '0')))
                     status._wan_ipv6_addr = get_ipv6(item.get('X_TP_ExternalIPv6Address', '::'))
 
-        # For routers with USB modem support, get modem state string.
+        # For routers with USB modem support, get modem state string and backup enabled status.
         wan_usb_values = None
         if self._wan_usb_support:
             try:
@@ -463,7 +463,8 @@ class TPLinkMRClientBase(AbstractRouter):
                 break
 
         acts = [
-            self.ActItem(self.ActItem.SET, 'WAN_USB_3G_LINK_CFG', '{},1,1,0,0,0'.format(i), attrs=['backupEnable={}'.format(int(enable))])
+            self.ActItem(self.ActItem.SET, 'WAN_USB_3G_LINK_CFG', '{},1,1,0,0,0'.format(i), 
+                attrs=['backupEnable={}'.format(int(enable)), 'ispIdx=5', 'manualAPN=1', 'dialNumber=*99***1#', 'APN=internet'])
         ]
         self.req_act(acts)
 
