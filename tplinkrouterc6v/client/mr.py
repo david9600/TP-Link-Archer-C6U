@@ -147,12 +147,11 @@ class TPLinkMRClientBase(AbstractRouter):
         self.req_act(acts)
 
     def renew(self) -> None:
-        # Find the interface number for Ethernet uplink
+        # Find interface number of Ethernet uplink
         acts = [
             self.ActItem(self.ActItem.GL, 'WAN_COMMON_INTF_CFG', attrs=['WANAccessType'])
         ]
         _, values = self.req_act(acts)
-        self._logger.info('values in renew: %s', values)
         i = 0
         for intf in self._to_list(values):
             i += 1
