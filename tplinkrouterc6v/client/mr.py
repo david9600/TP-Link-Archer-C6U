@@ -152,6 +152,12 @@ class TPLinkMRClientBase(AbstractRouter):
         ]
         _, values = self.req_act(acts)
         self._logger.info('values in renew: %s', values)
+        i = 0
+        for intf in self._to_list(values):
+            i += 1
+            if i.get('WANAccessType') == 'Ethernet':
+                break
+        self._logger.info('intf no. is: %s', i)
 
         acts = [
             self.ActItem(self.ActItem.OP, 'ACT_DHCP_RELEASE', '2,1,1,0,0,0')
