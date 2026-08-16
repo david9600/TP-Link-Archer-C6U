@@ -712,18 +712,18 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         self.request(self._url_vpn_client_user_list, payload)
 
     def set_dhcp_srv(self, enable: bool) -> None:
-        data = self.request(
-            self._url_ipv4_dhcps, 'operation=read'
-        )
-        leasetime = data.get('leasetime')
-        gateway = data.get('gateway')
-        start = data.get('ipaddr_start')
-        end = data.get('ipaddr_end')
-        self.request(
-            self._url_ipv4_dhcps,
-            urlencode({'operation': 'write', 'enable': 'on' if enable else 'off', 
-                'leasetime': leasetime, 'gateway': gateway, 'ipaddr_start': start, 'ipaddr_end': end }),
-        )
+        data = self.request(self._url_ipv4_dhcps, 'operation=read')
+        payload = urlencode({
+            'operation': 'write',
+            'enable': 'on' if enable else 'off',
+            'leasetime': data.get('leasetime'),
+            'pri_dns': data.get('pri_dns'),
+            'snd_dns': data.get('snd_dns'),
+            'gateway': data.get('gateway'),
+            'ipaddr_start': data.get('ipaddr_start'),
+            'ipaddr_end': data.get('ipaddr_end'),
+        })
+        self.request(self._url_ipv4_dhcps, payload)
 
     @staticmethod
     def _str2bool(v) -> bool | None:
