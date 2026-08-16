@@ -711,7 +711,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         })
         self.request(self._url_vpn_client_user_list, payload)
 
-    def set_dhcp_srv(self, enable: bool) -> None:
+    def set_ipv4_dhcps(self, enable: bool) -> None:
         data = self.request(self._url_ipv4_dhcps, 'operation=read')
         payload = urlencode({
             'operation': 'write',
