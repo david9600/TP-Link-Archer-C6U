@@ -31,7 +31,7 @@ class TplinkRouterProvider:
     @staticmethod
     def get_client(host: str, password: str, username: str = 'admin', logger: Logger = None,
                    verify_ssl: bool = True, vpn_support: bool = True, timeout: int = 30) -> AbstractRouter:
-        logger.debug('vpn support is %s', vpn_support)
+        logger.info('vpn support is %s', vpn_support)
         for client_name, client in TplinkRouterProvider.get_clients().items():
             if isinstance(client, TplinkC1200Router):
                 continue
