@@ -30,7 +30,7 @@ from tplinkrouterc6v.client.vr1200v import TplinkVR1200vRouter
 class TplinkRouterProvider:
     @staticmethod
     def get_client(host: str, password: str, username: str = 'admin', logger: Logger = None,
-                   verify_ssl: bool = True, timeout: int = 30) -> AbstractRouter:
+                   verify_ssl: bool = True, vpn_support: bool = True, timeout: int = 30) -> AbstractRouter:
         for client_name, client in TplinkRouterProvider.get_clients().items():
             if isinstance(client, TplinkC1200Router):
                 continue

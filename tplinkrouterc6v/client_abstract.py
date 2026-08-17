@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 
 class AbstractRouter(ABC):
     def __init__(self, host: str, password: str, username: str = 'admin', logger: Logger = None,
-                 verify_ssl: bool = True, timeout: int = 30) -> None:
+                 verify_ssl: bool = True, vpn_support: bool = True, timeout: int = 30) -> None:
         self.username = username
         self.password = password
         self.timeout = timeout
