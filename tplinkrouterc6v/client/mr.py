@@ -298,7 +298,7 @@ class TPLinkMRClientBase(AbstractRouter):
         wan_usb_values = None
         if self._wan_usb_support:
             try:
-                wan_usb_acts = [self.ActItem(self.ActItem.GL, 'WAN_USB_3G_LINK_CFG', attrs=['enable', 'backupEnable', 'cardName'])]
+                wan_usb_acts = [self.ActItem(self.ActItem.GL, 'WAN_USB_3G_LINK_CFG', attrs=['enable', 'backupEnable', 'cardName', 'lteDeviceName'])]
                 _, wan_usb_values = self.req_act(wan_usb_acts)
                 if wan_usb_values:
                     for item in self._to_list(wan_usb_values):
