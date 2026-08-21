@@ -62,7 +62,7 @@ class Status:
     wan_ipv6_enabled: bool | None = None
     _wan_ipv6_addr: IPv6Address | None = None
     usb_modem_state: str | None = None
-    wan_bkup_enable: bool | None = None
+    wan_backup_enable: bool | None = None
     ewan_connected: bool | None = None
     lan_ipv4_dhcp_enable: bool | None = None
     wired_total: int = 0
