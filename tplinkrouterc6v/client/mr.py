@@ -306,6 +306,7 @@ class TPLinkMRClientBase(AbstractRouter):
                             continue
                         self._logger.debug('enabled item is %s', item)
                         status.wan_bkup_enable = item.get('backupEnable') == '1'
+                        self._logger.debug('status.wan_bkup_enable is %s', status.wan_bkup_enable)
                         status.usb_modem_state = item.get('cardName', '')
                 else:
                     raise Exception("No USB modem support")
