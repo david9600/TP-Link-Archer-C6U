@@ -313,10 +313,10 @@ class TPLinkMRClientBase(AbstractRouter):
             except Exception:
                 self._wan_usb_support = False  
 
-        # self._logger.info(status)
-
         status.devices = list(devices.values())
         status.clients_total = status.wired_total + status.wifi_clients_total + status.guest_clients_total
+
+        self._logger.debug(status)
 
         return status
 
