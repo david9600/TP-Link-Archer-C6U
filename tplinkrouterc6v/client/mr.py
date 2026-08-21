@@ -453,6 +453,16 @@ class TPLinkMRClientBase(AbstractRouter):
         ]
 
         self.req_act(acts)
+    
+    def set_ipv4_dhcps(self, enable: bool) -> None:
+        acts = [
+            self.ActItem(self.ActItem.GET, 'LAN_HOST_CFG', '1,0,0,0,0,0')
+        ]
+        _, values = self.req_act(acts)
+
+        if values.__class__ == list:
+            values = values[0]
+        self._logger.info(values)
 
     def set_wan_backup(self, enable: bool) -> None:
         # Find interface number of USB uplink
