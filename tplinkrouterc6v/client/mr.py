@@ -460,9 +460,10 @@ class TPLinkMRClientBase(AbstractRouter):
         ]
         _, values = self.req_act(acts)
 
+        self._logger.info(values)
         if values.__class__ == list:
             values = values[0]
-        self._logger.info(values)
+        
 
     def set_wan_backup(self, enable: bool) -> None:
         # Find interface number of USB uplink
