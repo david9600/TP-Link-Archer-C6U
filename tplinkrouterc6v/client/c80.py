@@ -140,7 +140,7 @@ class TplinkC80Router(AbstractRouter):
                         parse.unquote(device_datamap['softVer']))
 
     def get_status(self) -> Status:
-        status = Status()
+        
         test_req_1 = "5|1,0,0"
         test_req_2 = "6|1,0,0"
         test_req_3 = "7|1,0,0"
@@ -151,7 +151,6 @@ class TplinkC80Router(AbstractRouter):
         request_text = '#'.join(all_requests)
         data_blocks = self._return_data_block(request_text)
         self._logger.info(data_blocks)
-        return status
 
         if self._wifi_request is None:
             request = '13|1,0,0'
