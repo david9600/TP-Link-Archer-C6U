@@ -146,19 +146,27 @@ class TplinkC80Router(AbstractRouter):
         return self._get_status_with_wifi() if self._wifi_request else self._get_status_without_wifi()
 
     def _get_status_with_wifi(self) -> Status:
-        mac_info_request = "1|1,0,0"
-        lan_ip_request = "4|1,0,0"
-        wan_ip_request = "23|1,0,0"
-        device_data_request = '13|1,0,0'
+        #mac_info_request = "1|1,0,0"
+        #lan_ip_request = "4|1,0,0"
+        #wan_ip_request = "23|1,0,0"
+        #device_data_request = '13|1,0,0'
+        test_req_1 = "5|1,0,0"
+        test_req_2 = "6|1,0,0"
+        test_req_3 = "7|1,0,0"
+        test_req_4 = "8|1,0,0"
+
         all_requests = [
-            mac_info_request, lan_ip_request, wan_ip_request, device_data_request,
-            RouterConstants.HOST_WIFI_2G_REQUEST, RouterConstants.HOST_WIFI_5G_REQUEST,
-            RouterConstants.GUEST_WIFI_2G_REQUEST, RouterConstants.GUEST_WIFI_5G_REQUEST,
-            RouterConstants.IOT_WIFI_2G_REQUEST, RouterConstants.IOT_WIFI_5G_REQUEST
+            test_req_1, test_req_2, test_req_2, test_req_4
+            #mac_info_request, lan_ip_request, wan_ip_request, device_data_request,
+            #RouterConstants.HOST_WIFI_2G_REQUEST, RouterConstants.HOST_WIFI_5G_REQUEST,
+            #RouterConstants.GUEST_WIFI_2G_REQUEST, RouterConstants.GUEST_WIFI_5G_REQUEST,
+            #RouterConstants.IOT_WIFI_2G_REQUEST, RouterConstants.IOT_WIFI_5G_REQUEST
         ]
         request_text = '#'.join(all_requests)
         data_blocks = self._return_data_block(request_text)
 
+        self._logger.info(data_blocks)
+        
         def extract_value(response_list, prefix):
             return next((s.split(prefix, 1)[1] for s in response_list if s.startswith(prefix)), None)
 
