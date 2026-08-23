@@ -456,12 +456,18 @@ class TplinkC80Router(AbstractRouter):
 
         data_blocks = {match[0]: match[1].strip().split("\r\n") for match in matches}
         self._logger.info('data blocks: %s', data_blocks)
-
-        dhcps_info = {
-            'poolStart': self._extract_value(data_blocks[RouterConstants.IPV4_DHCPS_REQUEST], "poolStart "),
-        }
-
+        dhcps_info = data_blocks[RouterConstants.IPV4_DHCPS_REQUEST]
         self._logger.info('dhcps info: %s', dhcps_info)
+        dhcps_status = {
+            'poolStart': self._extract_value(dhcps_info, "poolStart "),
+            'poolEnd': self._extract_value(dhcps_info, "poolEnd "),
+            'leaseTime': self._extract_value(dhcps_info, "leaseTime "),
+            'dns_0': self._extract_value(dhcps_info, "dns 0 "),
+            'dns_1': self._extract_value(dhcps_info, "dns 1 "),
+            'gateway': self._extract_value(dhcps_info, "gateway "),
+            'hostName': self._extract_value(dhcps_info, "hostName "),
+        }
+        self._logger.info('dhcps status: %s', dhcps_status)
     
     def _parse_devices(self, device_data_response: list[str]) -> list[Device]:
         filtered_devices = self._parse_response_to_dict(device_data_response)
