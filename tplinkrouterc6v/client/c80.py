@@ -233,9 +233,14 @@ class TplinkC80Router(AbstractRouter):
             else:
                 self._ipv6_support = False
         
-        dhcps_info = self._parse_last_values_from_block(data_blocks.get('8|1,0,0', []))
-        status.lan_ipv4_dhcp_enable = dhcps_info.get('enable', '0') == '1'
-        
+        try:
+            data_blocks = self._return_data_block('8|1,0,0')
+            dhcps_lines = data_blocks.get('8|1,0,0') if data_blocks else None
+            if dhcps_lines:
+                lan_ipv4_dhcp_enable = self._parse_last_values_from_block(dhcps_lines).get('enable', '0') == '1'
+        except Exception:
+            pass
+
         return status
 
     def _get_status_without_wifi(self) -> Status:
