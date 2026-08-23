@@ -436,13 +436,13 @@ class TplinkC80Router(AbstractRouter):
         return vpn_status
 
     def set_ipv4_dhcps(self, enable: bool) -> None:
-        body = self._encrypt_body(IPV4_DHCP_SERVER)
+        body = self._encrypt_body("8|1,0,0")
         response = self.request(2, 1, True, data=body)
         response_text = self._decrypt_data(response.text)
         matches = TplinkC80Router.DATA_REGEX.findall(response_text)
 
         data_blocks = {match[0]: match[1].strip().split("\r\n") for match in matches}
-        dhcps_status = self._extract_value(data_blocks[IPV4_DHCP_SERVER], "enable ")
+        dhcps_status = self._extract_value(data_blocks["8|1,0,0"], "enable ")
         self._logger.info("dhcps current status is %s", dhcps_status)
 
     
