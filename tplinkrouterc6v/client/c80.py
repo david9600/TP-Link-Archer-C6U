@@ -235,20 +235,6 @@ class TplinkC80Router(AbstractRouter):
             else:
                 self._ipv6_support = False
         
-        if self._dhcps_support:
-            try:
-                data_blocks = self._return_data_block(RouterConstants.IPV4_DHCPS_REQUEST)
-                dhcps_lines = data_blocks.get(RouterConstants.IPV4_DHCPS_REQUEST) if data_blocks else None
-                self._logger.info('dhcps_lines: %s', dhcps_lines)
-                if dhcps_lines:
-                    dhcps_info = self._parse_last_values_from_block(dhcps_lines)
-                    self._logger.info('dhcps info: %s', dhcps_info)
-                    status.lan_ipv4_dhcp_enable = dhcps_info.get('enable', '0') == '1'
-                else:
-                    self._dhcps_support = False
-            except Exception:
-                self._dhcps_support = False
-
         return status
 
     def _get_status_without_wifi(self) -> Status:
@@ -447,27 +433,6 @@ class TplinkC80Router(AbstractRouter):
         vpn_status.pptpvpn_enable = self._extract_value(data_blocks["22|1,0,0"], "linkType ") == '4'
 
         return vpn_status
-
-    def set_ipv4_dhcps(self, enable: bool) -> None:
-        body = self._encrypt_body(RouterConstants.IPV4_DHCPS_REQUEST)
-        response = self.request(2, 1, True, data=body)
-        response_text = self._decrypt_data(response.text)
-        matches = TplinkC80Router.DATA_REGEX.findall(response_text)
-
-        data_blocks = {match[0]: match[1].strip().split("\r\n") for match in matches}
-        self._logger.info('data blocks: %s', data_blocks)
-        dhcps_info = data_blocks[RouterConstants.IPV4_DHCPS_REQUEST]
-        self._logger.info('dhcps info: %s', dhcps_info)
-        dhcps_status = {
-            'poolStart': self._extract_value(dhcps_info, "poolStart "),
-            'poolEnd': self._extract_value(dhcps_info, "poolEnd "),
-            'leaseTime': self._extract_value(dhcps_info, "leaseTime "),
-            'dns_0': self._extract_value(dhcps_info, "dns 0 "),
-            'dns_1': self._extract_value(dhcps_info, "dns 1 "),
-            'gateway': self._extract_value(dhcps_info, "gateway "),
-            'hostName': self._extract_value(dhcps_info, "hostName "),
-        }
-        self._logger.info('dhcps status: %s', dhcps_status)
     
     def _parse_devices(self, device_data_response: list[str]) -> list[Device]:
         filtered_devices = self._parse_response_to_dict(device_data_response)
