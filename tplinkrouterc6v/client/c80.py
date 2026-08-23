@@ -18,6 +18,7 @@ class RouterConstants:
     AUTH_TOKEN_INDEX1 = 3
     AUTH_TOKEN_INDEX2 = 4
 
+    IPV4_DHCPS_REQUEST = '8|1,0,0'
     HOST_WIFI_2G_REQUEST = '33|1,1,0'
     HOST_WIFI_5G_REQUEST = '33|2,1,0'
     GUEST_WIFI_2G_REQUEST = '33|1,2,0'
@@ -236,8 +237,8 @@ class TplinkC80Router(AbstractRouter):
         
         if self._dhcps_support:
             try:
-                data_blocks = self._return_data_block('8|1,0,0')
-                dhcps_lines = data_blocks.get('8|1,0,0') if data_blocks else None
+                data_blocks = self._return_data_block(RouterConstants.IPV4_DHCPS_REQUEST)
+                dhcps_lines = data_blocks.get(RouterConstants.IPV4_DHCPS_REQUEST) if data_blocks else None
                 self._logger.info('dhcps_lines: %s', dhcps_lines)
                 if dhcps_lines:
                     dhcps_info = self._parse_last_values_from_block(dhcps_lines)
@@ -448,15 +449,19 @@ class TplinkC80Router(AbstractRouter):
         return vpn_status
 
     def set_ipv4_dhcps(self, enable: bool) -> None:
-        body = self._encrypt_body("8|1,0,0")
+        body = self._encrypt_body(RouterConstants.IPV4_DHCPS_REQUEST)
         response = self.request(2, 1, True, data=body)
         response_text = self._decrypt_data(response.text)
         matches = TplinkC80Router.DATA_REGEX.findall(response_text)
 
         data_blocks = {match[0]: match[1].strip().split("\r\n") for match in matches}
-        dhcps_status = self._extract_value(data_blocks["8|1,0,0"], "enable ")
-        self._logger.info("dhcps current status is %s", dhcps_status)
+        self._logger.info('data blocks: %s', data_blocks)
 
+        dhcps_info = {
+            'poolStart': self._extract_value(data_blocks[RouterConstants.IPV4_DHCPS_REQUEST], "poolStart "),
+        }
+
+        self._logger.info('dhcps info: %s', dhcps_info)
     
     def _parse_devices(self, device_data_response: list[str]) -> list[Device]:
         filtered_devices = self._parse_response_to_dict(device_data_response)
