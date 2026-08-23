@@ -242,7 +242,7 @@ class TplinkC80Router(AbstractRouter):
                 if dhcps_lines:
                     dhcps_info = self._parse_last_values_from_block(dhcps_lines)
                     self._logger.info('dhcps info: %s', dhcps_info)
-                    lan_ipv4_dhcp_enable = dhcps_info.get('enable', '0') == '1'
+                    status.lan_ipv4_dhcp_enable = dhcps_info.get('enable', '0') == '1'
                 else:
                     self._dhcps_support = False
             except Exception:
