@@ -89,6 +89,7 @@ class TplinkC80Router(AbstractRouter):
         self._encryption = EncryptionState()
         self._wifi_request = None
         self._ipv6_support = True
+        self._dhcps_support = True
 
     def supports(self) -> bool:
         try:
@@ -233,13 +234,19 @@ class TplinkC80Router(AbstractRouter):
             else:
                 self._ipv6_support = False
         
-        try:
-            data_blocks = self._return_data_block('8|1,0,0')
-            dhcps_lines = data_blocks.get('8|1,0,0') if data_blocks else None
-            if dhcps_lines:
-                lan_ipv4_dhcp_enable = self._parse_last_values_from_block(dhcps_lines).get('enable', '0') == '1'
-        except Exception:
-            pass
+        if self._dhcps_support:
+            try:
+                data_blocks = self._return_data_block('8|1,0,0')
+                dhcps_lines = data_blocks.get('8|1,0,0') if data_blocks else None
+                self._logger.info('dhcps_lines: %s', dhcps_lines)
+                if dhcps_lines:
+                    dhcps_info = self._parse_last_values_from_block(dhcps_lines)
+                    self._logger.info('dhcps info: %s', dhcps_info)
+                    lan_ipv4_dhcp_enable = dhcps_info.get('enable', '0') == '1'
+                else:
+                    self._dhcps_support = False
+            except Exception:
+                self._dhcps_support = False
 
         return status
 
