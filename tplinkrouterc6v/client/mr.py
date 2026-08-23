@@ -462,8 +462,7 @@ class TPLinkMRClientBase(AbstractRouter):
         _, values = self.req_act(acts)
 
         self._logger.info('wan common intf cfg: %s', values)
-        return
-        
+
         i = 0
         for intf in self._to_list(values):
             i += 1
