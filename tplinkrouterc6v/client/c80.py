@@ -18,7 +18,6 @@ class RouterConstants:
     AUTH_TOKEN_INDEX1 = 3
     AUTH_TOKEN_INDEX2 = 4
 
-    IPV4_DHCP_SERVER = '8|1,1,0'
     HOST_WIFI_2G_REQUEST = '33|1,1,0'
     HOST_WIFI_5G_REQUEST = '33|2,1,0'
     GUEST_WIFI_2G_REQUEST = '33|1,2,0'
@@ -142,10 +141,10 @@ class TplinkC80Router(AbstractRouter):
 
     def get_status(self) -> Status:
         
-        test_req_1 = "10|1,0,0"
-        test_req_2 = "11|1,0,0"
-        test_req_3 = "12|1,0,0"
-        test_req_4 = "14|1,0,0"
+        test_req_1 = "15|1,0,0"
+        test_req_2 = "16|1,0,0"
+        test_req_3 = "17|1,0,0"
+        test_req_4 = "18|1,0,0"
         all_requests = [
             test_req_1, test_req_2, test_req_2, test_req_4
         ]
@@ -163,6 +162,7 @@ class TplinkC80Router(AbstractRouter):
         lan_ip_request = "4|1,0,0"
         wan_ip_request = "23|1,0,0"
         device_data_request = '13|1,0,0'
+        dhcps_request = '8|1,0,0'
 
         all_requests = [
             mac_info_request, lan_ip_request, wan_ip_request, device_data_request,
@@ -232,6 +232,9 @@ class TplinkC80Router(AbstractRouter):
                 status._wan_ipv6_addr = get_ipv6(ipv6_wan_info.get('globalIp', '::'))
             else:
                 self._ipv6_support = False
+        
+        dhcps_info = self._parse_last_values_from_block(data_blocks.get('8|1,0,0', []))
+        status.lan_ipv4_dhcp_enable = dhcps_info.get('enable', '0') == '1'
         
         return status
 
