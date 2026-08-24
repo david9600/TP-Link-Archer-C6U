@@ -100,7 +100,7 @@ class TPLinkMRClientBase(AbstractRouter):
         self._seq = None
         self._url_rsa_key = 'cgi/getParm'
         self._ipv6_support = True
-        self._wan_usb_support = False
+        self._wan_usb_support = True
 
         self._encryption = EncryptionWrapperMR()
 
