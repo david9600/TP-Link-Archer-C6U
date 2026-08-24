@@ -143,10 +143,10 @@ class TplinkC80Router(AbstractRouter):
 
     def get_status(self) -> Status:
         
-        test_req_1 = "19|1,0,0"
-        test_req_2 = "20|1,0,0"
-        test_req_3 = "21|1,0,0"
-        test_req_4 = "22|1,0,0"
+        test_req_1 = "49|1,0,0"
+        test_req_2 = "50|1,0,0"
+        test_req_3 = "51|1,0,0"
+        test_req_4 = "52|1,0,0"
         all_requests = [
             test_req_1, test_req_2, test_req_2, test_req_4
         ]
