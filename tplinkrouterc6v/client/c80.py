@@ -143,10 +143,10 @@ class TplinkC80Router(AbstractRouter):
 
     def get_status(self) -> Status:
         
-        test_req_1 = "15|1,0,0"
-        test_req_2 = "16|1,0,0"
-        test_req_3 = "17|1,0,0"
-        test_req_4 = "18|1,0,0"
+        test_req_1 = "19|1,0,0"
+        test_req_2 = "20|1,0,0"
+        test_req_3 = "21|1,0,0"
+        test_req_4 = "22|1,0,0"
         all_requests = [
             test_req_1, test_req_2, test_req_2, test_req_4
         ]
@@ -292,6 +292,12 @@ class TplinkC80Router(AbstractRouter):
     def set_wifi(self, wifi: Connection, enable: bool) -> None:
         enable_string = f'bEnable {int(enable)}'
         text = f'id {RouterConstants.CONNECTION_REQUESTS_MAP[wifi]}\r\n{enable_string}'
+        body = self._encrypt_body(text)
+        self.request(1, 0, True, data=body)
+
+    def set_ipv4_dhcps(self, enable: bool) -> None:
+        enable_string = f'enable {int(enable)}'
+        text = f'id {RouterConstants.IPV4_DHCPS_REQUEST}\r\n{enable_string}'
         body = self._encrypt_body(text)
         self.request(1, 0, True, data=body)
 
