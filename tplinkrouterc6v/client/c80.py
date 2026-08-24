@@ -90,7 +90,6 @@ class TplinkC80Router(AbstractRouter):
         self._encryption = EncryptionState()
         self._wifi_request = None
         self._ipv6_support = True
-        self._dhcps_support = True
 
     def supports(self) -> bool:
         try:
