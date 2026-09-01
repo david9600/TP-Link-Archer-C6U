@@ -1,5 +1,3 @@
-# Note: tested on firmware 1.0.0 Build 20230218 Rel.50633
-
 from __future__ import annotations
 
 import json
@@ -8,9 +6,10 @@ from html.parser import HTMLParser
 from logging import Logger
 
 from requests import Session
+from macaddress import EUI48
 
 from tplinkrouterc6v.client_abstract import AbstractRouter
-from tplinkrouterc6v.common.dataclass import Firmware, IPv4Status, Status
+from tplinkrouterc6v.common.dataclass import Firmware, IPv4Status, PortStatus, Status
 from tplinkrouterc6v.common.exception import AuthorizeError, ClientError
 from tplinkrouterc6v.common.helper import get_ip, get_mac
 from tplinkrouterc6v.common.package_enum import Connection
@@ -43,6 +42,8 @@ class TPLinkSG108EClient(AbstractRouter):
         self._session = Session()
         self._logged = False
         self._headers = {"Referer": f"{self.host}/"}
+        self._lan_mac: EUI48 | None = None
+        self._lan_mac_resolved = False
 
     def supports(self) -> bool:
         try:
@@ -53,7 +54,11 @@ class TPLinkSG108EClient(AbstractRouter):
                 return True
             info = vars.get("info_ds")
             if isinstance(info, dict):
-                descr = _flatten_dict(info).get("descriStr")
+                flat = _flatten_dict(info)
+                hardware = flat.get("hardwareStr")
+                if isinstance(hardware, str) and "TL-SG" in hardware:
+                    return True
+                descr = flat.get("descriStr")
                 return isinstance(descr, str) and "TL-SG" in descr
             return False
         except Exception:
@@ -127,8 +132,20 @@ class TPLinkSG108EClient(AbstractRouter):
         status.wifi_clients_total = 0
         status.guest_clients_total = 0
         status.devices = []
-        # Leave other fields unset.
+        status._lan_macaddr = self._resolve_lan_mac()
+
         return status
+
+    def _resolve_lan_mac(self) -> EUI48 | None:
+        if not self._lan_mac_resolved:
+            try:
+                mac = self.device_info().get("macStr")
+                if mac:
+                    self._lan_mac = get_mac(mac)
+            except Exception:
+                pass
+        self._lan_mac_resolved = True
+        return self._lan_mac
 
     def get_ipv4_status(self) -> IPv4Status:
         settings = self.ip_settings()
@@ -141,6 +158,57 @@ class TPLinkSG108EClient(AbstractRouter):
             mac = self.device_info().get("macStr")
         ipv4._lan_macaddr = get_mac(mac or "00:00:00:00:00:00")
         return ipv4
+
+    def get_port_status(self) -> list[PortStatus]:
+        """Return per-port status for TL-SG108E (tested on v6.0).
+
+        Requires authorize(). Performs two HTTP requests (port_stats and port_settings).
+        Packet counters are packet counts, not bytes, and may be reset by the switch.
+        """
+        stats = self.port_stats()
+        settings = self.port_settings()
+        count = _physical_port_count(stats, settings)
+        if count <= 0:
+            return []
+
+        stats_info = _as_dict(stats.get("all_info") if isinstance(stats, dict) else None)
+        settings_info = _as_dict(settings.get("all_info") if isinstance(settings, dict) else None)
+        stats_state = stats_info.get("state")
+        settings_state = settings_info.get("state")
+        link_status = stats_info.get("link_status")
+        spd_cfg = settings_info.get("spd_cfg")
+        spd_act = settings_info.get("spd_act")
+        fc_cfg = settings_info.get("fc_cfg")
+        fc_act = settings_info.get("fc_act")
+        trunk = settings_info.get("trunk_info")
+        pkts = stats_info.get("pkts")
+
+        ports: list[PortStatus] = []
+        for i in range(count):
+            enabled = _enabled_at(stats_state, settings_state, i)
+            auto_neg, cfg_speed, cfg_duplex = _configured_mode(_at(spd_cfg, i))
+            neg_speed, neg_duplex = _negotiated_mode(_at(spd_act, i))
+            base = i * 4
+            ports.append(
+                PortStatus(
+                    port=i + 1,
+                    enabled=enabled,
+                    link_up=_link_up(enabled, _at(link_status, i)),
+                    auto_negotiation=auto_neg,
+                    configured_speed=cfg_speed,
+                    configured_duplex=cfg_duplex,
+                    negotiated_speed=neg_speed,
+                    negotiated_duplex=neg_duplex,
+                    flow_control_enabled=_bool01(_at(fc_cfg, i)),
+                    flow_control_active=_bool01(_at(fc_act, i)),
+                    lag=_lag(_at(trunk, i)),
+                    tx_good_packets=_parse_int(_at(pkts, base)),
+                    tx_bad_packets=_parse_int(_at(pkts, base + 1)),
+                    rx_good_packets=_parse_int(_at(pkts, base + 2)),
+                    rx_bad_packets=_parse_int(_at(pkts, base + 3)),
+                )
+            )
+        return ports
 
     def reboot(self) -> None:
         r = self._session.post(
@@ -410,11 +478,104 @@ def _split_top_level(s: str) -> list[str]:
     return parts
 
 
+_SPEED_DUPLEX = {
+    2: (10, "half"),
+    3: (10, "full"),
+    4: (100, "half"),
+    5: (100, "full"),
+    6: (1000, "full"),
+}
+_LINK_UP_CODES = {1, 2, 3, 4, 5, 6}
+
+
 def _safe_int(value, default: int = 0) -> int:
     try:
         return int(value)
     except Exception:
         return default
+
+
+def _as_dict(value) -> dict:
+    return value if isinstance(value, dict) else {}
+
+
+def _parse_int(value) -> int | None:
+    if isinstance(value, bool) or value is None:
+        return None
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _at(seq, index: int):
+    if not isinstance(seq, list) or index < 0 or index >= len(seq):
+        return None
+    return seq[index]
+
+
+def _bool01(value) -> bool | None:
+    parsed = _parse_int(value)
+    if parsed == 0:
+        return False
+    if parsed == 1:
+        return True
+    return None
+
+
+def _physical_port_count(stats, settings) -> int:
+    for data in (stats, settings):
+        if not isinstance(data, dict):
+            continue
+        n = _parse_int(data.get("max_port_num"))
+        if n is not None and n > 0:
+            return n
+    return 0
+
+
+def _enabled_at(stats_state, settings_state, index: int) -> bool | None:
+    enabled = _bool01(_at(stats_state, index))
+    if enabled is not None:
+        return enabled
+    return _bool01(_at(settings_state, index))
+
+
+def _link_up(enabled: bool | None, code) -> bool | None:
+    if enabled is False:
+        return False
+    parsed = _parse_int(code)
+    if parsed is None:
+        return None
+    if parsed == 0:
+        return False
+    if parsed in _LINK_UP_CODES:
+        return True
+    return None
+
+
+def _configured_mode(code) -> tuple[bool | None, int | None, str | None]:
+    parsed = _parse_int(code)
+    if parsed == 1:
+        return True, None, None
+    decoded = _SPEED_DUPLEX.get(parsed) if parsed is not None else None
+    if decoded is None:
+        return None, None, None
+    return False, decoded[0], decoded[1]
+
+
+def _negotiated_mode(code) -> tuple[int | None, str | None]:
+    parsed = _parse_int(code)
+    decoded = _SPEED_DUPLEX.get(parsed) if parsed is not None else None
+    if decoded is None:
+        return None, None
+    return decoded
+
+
+def _lag(value) -> int | None:
+    parsed = _parse_int(value)
+    if parsed is None or parsed <= 0:
+        return None
+    return parsed
 
 
 def _count_ports_enabled(state, ports_total: int) -> int:
