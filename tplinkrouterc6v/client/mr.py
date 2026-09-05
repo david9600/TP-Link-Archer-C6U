@@ -254,7 +254,7 @@ class TPLinkMRClientBase(AbstractRouter):
                 ]
                 _, wan_extd_values = self.req_act(wan_extd_acts)
                 self._logger.info(wan_extd_values)
-                
+
                 if wan_extd_values:
                     for item in self._to_list(wan_extd_values):
                         if int(item.get('enable', '0')) == 0 and wan_extd_values.__class__ == list:
@@ -505,7 +505,7 @@ class TPLinkMRClientBase(AbstractRouter):
             if self._logger:
                 self._logger.debug(error)
             raise ClientError(error)
-
+        self._logger.info('req_act response: %s', response)
         result = self._merge_response(response)
 
         return response, result.get('0') if len(result) == 1 and result.get('0') else result
