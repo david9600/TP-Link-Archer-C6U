@@ -249,10 +249,12 @@ class TPLinkMRClientBase(AbstractRouter):
         if self._wan_extd_support:
             try:
                 wan_extd_acts = [
-                    self.ActItem(self.ActItem.GS, 'WAN_IP_CONN',
+                    self.ActItem(self.ActItem.GS, 'WAN_IP_CONN', '2,0,0,0,0,0',
                         attrs=['enable', 'connectionStatus', 'name'])
                 ]
                 _, wan_extd_values = self.req_act(wan_extd_acts)
+                self._logger.info(wan_extd_values)
+                
                 if wan_extd_values:
                     for item in self._to_list(wan_extd_values):
                         if int(item.get('enable', '0')) == 0 and wan_extd_values.__class__ == list:
