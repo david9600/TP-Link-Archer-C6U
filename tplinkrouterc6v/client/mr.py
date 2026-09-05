@@ -247,6 +247,7 @@ class TPLinkMRClientBase(AbstractRouter):
 
         # WAN extended support (starting with E-WAN connect/disconnect, more to be added later)
         if self._wan_extd_support:
+            wan_extd_values = None
             try:
                 wan_extd_acts = [
                     self.ActItem(self.ActItem.GS, 'WAN_IP_CONN',
@@ -257,10 +258,10 @@ class TPLinkMRClientBase(AbstractRouter):
 
                 if wan_extd_values:
                     for item in self._to_list(wan_extd_values):
-                        if int(item.get('enable', '0')) == 0 and wan_extd_values.__class__ == list:
+                        if not bool(int(item.get('enable'))) and wan_extd_values.__class__ == list:
                             continue
                         self._logger.info('enabled item: %s', item)
-                        if item.get('name', '').lower() == 'ethernet':
+                        if 'eth' in item.get('X_TP_IfName', ''):
                             self._logger.info('ethernet item: %s', item)
                             status.ewan_connected = intf.get('connectionStatus') == 'Connected'
                 else:
