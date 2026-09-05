@@ -257,7 +257,9 @@ class TPLinkMRClientBase(AbstractRouter):
                     for item in self._to_list(wan_extd_values):
                         if int(item.get('enable', '0')) == 0 and wan_extd_values.__class__ == list:
                             continue
+                        self._logger.info('enabled item: %s', item)
                         if item.get('name', '').lower() == 'ethernet':
+                            self._logger.info('ethernet item: %s', item)
                             status.ewan_connected = intf.get('connectionStatus') == 'Connected'
                 else:
                     self._wan_extd_support = False
