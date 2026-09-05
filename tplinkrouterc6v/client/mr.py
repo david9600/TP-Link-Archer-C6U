@@ -263,7 +263,7 @@ class TPLinkMRClientBase(AbstractRouter):
                         self._logger.info('enabled item: %s', item)
                         if 'eth' in item.get('X_TP_IfName', ''):
                             self._logger.info('ethernet item: %s', item)
-                            status.ewan_connected = intf.get('connectionStatus') == 'Connected'
+                            status.ewan_connected = item.get('connectionStatus') == 'Connected'
                 else:
                     self._wan_extd_support = False
             except Exception:
