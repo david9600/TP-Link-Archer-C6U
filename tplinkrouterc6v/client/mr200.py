@@ -89,6 +89,7 @@ class TPLinkMR200Client(TPLinkMRClient):
 
     def get_lte_status(self) -> LTEStatus:
         status = LTEStatus()
+        self._logger.info('in mr200 get_lte_status')
         acts = [
             self.ActItem(self.ActItem.GET, 'WAN_LTE_LINK_CFG', '2,1,0,0,0,0',
                          attrs=['enable', 'connectStatus', 'networkType', 'roamingStatus', 'simStatus',
