@@ -100,7 +100,7 @@ class TPLinkMRClientBase(AbstractRouter):
         self._seq = None
         self._url_rsa_key = 'cgi/getParm'
         self._ipv6_support = True
-        self._wan_extd_support = True
+        self._wan_eth_support = True
         self._wan_usb_support = True
 
         self._encryption = EncryptionWrapperMR()
@@ -250,17 +250,17 @@ class TPLinkMRClientBase(AbstractRouter):
         # probe once and permanently disable further attempts on failure.
         if self._ipv6_support:
             try:
-                wan_ipv6_acts = [
+                wan_aux_acts = [
                     self.ActItem(
                         self.ActItem.GS,
                         'WAN_IP_CONN',
                         attrs=['enable', 'X_TP_IPv6Enabled', 'X_TP_ExternalIPv6Address'],
                     ),
                 ]
-                _, wan_ipv6_values = self.req_act(wan_ipv6_acts)
-                if wan_ipv6_values:
-                    for item in self._to_list(wan_ipv6_values):
-                        if int(item.get('enable', '0')) == 0 and wan_ipv6_values.__class__ == list:
+                _, wan_aux_values = self.req_act(wan_aux_acts)
+                if wan_aux_values:
+                    for item in self._to_list(wan_aux_values):
+                        if int(item.get('enable', '0')) == 0 and wan_aux_values.__class__ == list:
                             continue
                         status.wan_ipv6_enabled = bool(int(item.get('X_TP_IPv6Enabled', '0')))
                         status._wan_ipv6_addr = get_ipv6(item.get('X_TP_ExternalIPv6Address', '::'))
@@ -269,24 +269,25 @@ class TPLinkMRClientBase(AbstractRouter):
             except Exception:
                 self._ipv6_support = False
 
-        # WAN extended support (starting with E-WAN connected status, for DHCP release/renew)
-        if self._wan_extd_support:
+        # E-WAN connect status (for DHCP release/renew)
+        # Probe once and disable if not supported by router.
+        if self._wan_eth_support:
             try:
-                wan_extd_acts = [
+                wan_eth_acts = [
                     self.ActItem(self.ActItem.GS, 'WAN_IP_CONN',
                         attrs=['enable', 'connectionStatus', 'X_TP_IfName'])
                 ]
-                _, wan_extd_values = self.req_act(wan_extd_acts)
-                if wan_extd_values:
-                    for item in self._to_list(wan_extd_values):
-                        if not bool(int(item.get('enable'))) and wan_extd_values.__class__ == list:
+                _, wan_eth_values = self.req_act(wan_eth_acts)
+                if wan_eth_values:
+                    for item in self._to_list(wan_eth_values):
+                        if not bool(int(item.get('enable'))) and wan_eth_values.__class__ == list:
                             continue
                         if 'eth' in item.get('X_TP_IfName', ''):
                             status.ewan_connected = item.get('connectionStatus') == 'Connected'
                 else:
-                    self._wan_extd_support = False
+                    self._wan_eth_support = False
             except Exception:
-                self._wan_extd_support = False
+                self._wan_eth_support = False
 
         # For routers with USB modem support, get modem state string and backup enabled status.
         if self._wan_usb_support:
