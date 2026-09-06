@@ -299,9 +299,9 @@ class TPLinkMRClientBase(AbstractRouter):
                     for item in self._to_list(wan_usb_values):
                         if int(item['enable']) == 0:
                             continue
-                        self._logger.info('enabled item is %s', item)
+                        # self._logger.info('enabled item is %s', item)
                         status.wan_backup_enable = item.get('backupEnable') == '1'
-                        self._logger.info('status.wan_backup_enable is %s', status.wan_backup_enable)
+                        # self._logger.info('status.wan_backup_enable is %s', status.wan_backup_enable)
                         status.usb_modem_state = item.get('cardName', '')
                 else:
                     self._wan_usb_support = False
