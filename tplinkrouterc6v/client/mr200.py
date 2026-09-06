@@ -101,7 +101,7 @@ class TPLinkMR200Client(TPLinkMRClient):
             self.ActItem(self.ActItem.GET, 'LTE_WAN_CFG', '2,1,0,0,0,0'),
         ]
         _, values = self.req_act(acts)
-
+        self._logger.info('LTE values: %s', values)
         status.enable = values['0'].get('enable', 0)
         status.connect_status = values['0'].get('connectStatus', 0)
         status.network_type = values['0'].get('networkType', 0)
