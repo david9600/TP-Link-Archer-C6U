@@ -245,24 +245,20 @@ class TPLinkMRClientBase(AbstractRouter):
         except Exception:
             pass
 
-        # WAN extended support (starting with E-WAN connect/disconnect, more to be added later)
+        # WAN extended support (starting with E-WAN connected, more to be added later)
         if self._wan_extd_support:
-            wan_extd_values = None
             try:
                 wan_extd_acts = [
                     self.ActItem(self.ActItem.GS, 'WAN_IP_CONN',
                         attrs=['enable', 'connectionStatus', 'X_TP_IfName'])
                 ]
                 _, wan_extd_values = self.req_act(wan_extd_acts)
-                self._logger.info('wan_extd_values: %s', wan_extd_values)
-
                 if wan_extd_values:
                     for item in self._to_list(wan_extd_values):
                         if not bool(int(item.get('enable'))) and wan_extd_values.__class__ == list:
                             continue
-                        self._logger.info('enabled item: %s', item)
                         if 'eth' in item.get('X_TP_IfName', ''):
-                            self._logger.info('ethernet item: %s', item)
+                            # self._logger.info('ethernet item: %s', item)
                             status.ewan_connected = item.get('connectionStatus') == 'Connected'
                 else:
                     self._wan_extd_support = False
@@ -270,23 +266,22 @@ class TPLinkMRClientBase(AbstractRouter):
                 self._wan_extd_support = False
 
         # For routers with USB modem support, get modem state string and backup enabled status.
-        wan_usb_values = None
         if self._wan_usb_support:
             try:
                 wan_usb_acts = [
                     self.ActItem(self.ActItem.GL, 'WAN_USB_3G_LINK_CFG',
-                        attrs=['enable', 'backupEnable', 'cardName', 'lteDeviceName'])]
+                        attrs=['enable', 'backupEnable', 'cardName'])]
                 _, wan_usb_values = self.req_act(wan_usb_acts)
                 if wan_usb_values:
                     for item in self._to_list(wan_usb_values):
                         if int(item['enable']) == 0:
                             continue
-                        self._logger.debug('enabled item is %s', item)
+                        self._logger.info('enabled item is %s', item)
                         status.wan_backup_enable = item.get('backupEnable') == '1'
-                        self._logger.debug('status.wan_backup_enable is %s', status.wan_backup_enable)
+                        self._logger.info('status.wan_backup_enable is %s', status.wan_backup_enable)
                         status.usb_modem_state = item.get('cardName', '')
                 else:
-                    raise Exception("No USB modem support")
+                    self._wan_usb_support = False
             except Exception:
                 self._wan_usb_support = False  
 
