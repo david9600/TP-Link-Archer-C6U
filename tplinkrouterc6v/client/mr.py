@@ -481,10 +481,10 @@ class TPLinkMRClientBase(AbstractRouter):
             i += 1
             if intf.get('WANAccessType').lower() == 'ethernet':
                 break
-        dhcp_command = 'ACT_DHCP_RENEW' if enable else 'ACT_DHCP_RELEASE':
-            acts = [
-                self.ActItem(self.ActItem.OP, dhcp_command, '{},1,1,0,0,0'.format(i))
-            ]
+        dhcp_command = 'ACT_DHCP_RENEW' if enable else 'ACT_DHCP_RELEASE'
+        acts = [
+            self.ActItem(self.ActItem.OP, dhcp_command, '{},1,1,0,0,0'.format(i))
+        ]
         self.req_act(acts)
 
     @staticmethod
