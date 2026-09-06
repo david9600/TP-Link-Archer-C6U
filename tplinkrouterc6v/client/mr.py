@@ -245,7 +245,31 @@ class TPLinkMRClientBase(AbstractRouter):
         except Exception:
             pass
 
-        # WAN extended support (starting with E-WAN connected, more to be added later)
+        # Separate WAN_IP_CONN request for IPv6 attrs: asking for them in the
+        # main status batch breaks some firmwares that lack IPv6 support, so we
+        # probe once and permanently disable further attempts on failure.
+        if self._ipv6_support:
+            try:
+                wan_aux_acts = [
+                    self.ActItem(
+                        self.ActItem.GS,
+                        'WAN_IP_CONN',
+                        attrs=['enable', 'X_TP_IPv6Enabled', 'X_TP_ExternalIPv6Address'],
+                    ),
+                ]
+                _, wan_aux_values = self.req_act(wan_aux_acts)
+                if wan_aux_values:
+                    for item in self._to_list(wan_aux_values):
+                        if int(item.get('enable', '0')) == 0 and wan_aux_values.__class__ == list:
+                            continue
+                        status.wan_ipv6_enabled = bool(int(item.get('X_TP_IPv6Enabled', '0')))
+                        status._wan_ipv6_addr = get_ipv6(item.get('X_TP_ExternalIPv6Address', '::'))
+                else:
+                    self._ipv6_support = False
+            except Exception:
+                self._ipv6_support = False
+
+        # WAN extended support (starting with E-WAN connected status, for DHCP release/renew)
         if self._wan_extd_support:
             try:
                 wan_extd_acts = [
@@ -258,7 +282,6 @@ class TPLinkMRClientBase(AbstractRouter):
                         if not bool(int(item.get('enable'))) and wan_extd_values.__class__ == list:
                             continue
                         if 'eth' in item.get('X_TP_IfName', ''):
-                            # self._logger.info('ethernet item: %s', item)
                             status.ewan_connected = item.get('connectionStatus') == 'Connected'
                 else:
                     self._wan_extd_support = False
