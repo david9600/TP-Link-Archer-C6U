@@ -277,8 +277,8 @@ class TPLinkMRClientBase(AbstractRouter):
                         attrs=['enable', 'connectionStatus', 'X_TP_IfName'])
                 ]
                 _, wan_extd_values = self.req_act(wan_extd_acts)
-                self._logger.info('wan_extd_acts: %s', wan_extd_acts)
                 self._logger.info('wan_extd_values: %s', wan_extd_values)
+                
                 if wan_extd_values:
                     for item in self._to_list(wan_extd_values):
                         if not bool(int(item.get('enable'))) and wan_extd_values.__class__ == list:
@@ -297,7 +297,7 @@ class TPLinkMRClientBase(AbstractRouter):
                     self.ActItem(self.ActItem.GL, 'WAN_USB_3G_LINK_CFG',
                         attrs=['enable', 'backupEnable', 'cardName'])]
                 _, wan_usb_values = self.req_act(wan_usb_acts)
-                self._logger.info('wan_usb_acts: %s', wan_usb_acts)
+                self._logger.info('wan_usb_values: %s', wan_usb_values)
 
                 if wan_usb_values:
                     for item in self._to_list(wan_usb_values):
