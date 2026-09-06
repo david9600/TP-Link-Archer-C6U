@@ -278,6 +278,7 @@ class TPLinkMRClientBase(AbstractRouter):
                 ]
                 _, wan_extd_values = self.req_act(wan_extd_acts)
                 if wan_extd_values:
+                    self._logger.info('wan extd values: %s', wan_extd_values)
                     for item in self._to_list(wan_extd_values):
                         if not bool(int(item.get('enable'))) and wan_extd_values.__class__ == list:
                             continue
@@ -476,12 +477,14 @@ class TPLinkMRClientBase(AbstractRouter):
             self.ActItem(self.ActItem.GL, 'WAN_COMMON_INTF_CFG', attrs=['WANAccessType'])
         ]
         _, values = self.req_act(acts)
+        self._logger.info('set_ewan values: %s', values)
         i = 0
         for intf in self._to_list(values):
             i += 1
             if intf.get('WANAccessType').lower() == 'ethernet':
                 break
         dhcp_command = 'ACT_DHCP_RENEW' if enable else 'ACT_DHCP_RELEASE'
+        self._logger.info('dhcp command: %s', dhcp_command)
         acts = [
             self.ActItem(self.ActItem.OP, dhcp_command, '{},1,1,0,0,0'.format(i))
         ]
