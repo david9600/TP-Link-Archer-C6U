@@ -101,6 +101,8 @@ class TPLinkMRClientBase(AbstractRouter):
         self._ee = None
         self._seq = None
         self._ipv6_support = True
+        self._wan_extd_support = True
+        self._wan_usb_support = True
         self._url_rsa_key = 'cgi/getParm'
 
         self._encryption = EncryptionWrapperMR()
@@ -248,17 +250,17 @@ class TPLinkMRClientBase(AbstractRouter):
         # probe once and permanently disable further attempts on failure.
         if self._ipv6_support:
             try:
-                wan_aux_acts = [
+                wan_ipv6_acts = [
                     self.ActItem(
                         self.ActItem.GS,
                         'WAN_IP_CONN',
                         attrs=['enable', 'X_TP_IPv6Enabled', 'X_TP_ExternalIPv6Address'],
                     ),
                 ]
-                _, wan_aux_values = self.req_act(wan_aux_acts)
-                if wan_aux_values:
-                    for item in self._to_list(wan_aux_values):
-                        if int(item.get('enable', '0')) == 0 and wan_aux_values.__class__ == list:
+                _, wan_ipv6_values = self.req_act(wan_ipv6_acts)
+                if wan_ipv6_values:
+                    for item in self._to_list(wan_ipv6_values):
+                        if int(item.get('enable', '0')) == 0 and wan_ipv6_values.__class__ == list:
                             continue
                         status.wan_ipv6_enabled = bool(int(item.get('X_TP_IPv6Enabled', '0')))
                         status._wan_ipv6_addr = get_ipv6(item.get('X_TP_ExternalIPv6Address', '::'))
@@ -267,6 +269,45 @@ class TPLinkMRClientBase(AbstractRouter):
             except Exception:
                 self._ipv6_support = False
 
+        # WAN extended support (starting with E-WAN connected status, for DHCP release/renew)
+        # Probe once and disable if not supported by router.
+        if self._wan_extd_support:
+            try:
+                wan_extd_acts = [
+                    self.ActItem(self.ActItem.GS, 'WAN_IP_CONN',
+                        attrs=['enable', 'connectionStatus', 'X_TP_IfName'])
+                ]
+                _, wan_extd_values = self.req_act(wan_extd_acts)
+                if wan_extd_values:
+                    for item in self._to_list(wan_extd_values):
+                        if not bool(int(item.get('enable'))) and wan_extd_values.__class__ == list:
+                            continue
+                        if 'eth' in item.get('X_TP_IfName', ''):
+                            status.ewan_connected = item.get('connectionStatus') == 'Connected'
+                else:
+                    self._wan_extd_support = False
+            except Exception:
+                self._wan_extd_support = False
+
+        # For routers with USB modem support, get modem state string and backup enabled status.
+        # Probe once and disable if not supported by router.
+        if self._wan_usb_support:
+            try:
+                wan_usb_acts = [
+                    self.ActItem(self.ActItem.GL, 'WAN_USB_3G_LINK_CFG',
+                        attrs=['enable', 'backupEnable', 'cardName'])]
+                _, wan_usb_values = self.req_act(wan_usb_acts)
+                if wan_usb_values:
+                    for item in self._to_list(wan_usb_values):
+                        if int(item['enable']) == 0:
+                            continue
+                        status.wan_backup_enable = item.get('backupEnable') == '1'
+                        status.usb_modem_state = item.get('cardName', '')
+                else:
+                    self._wan_usb_support = False
+            except Exception:
+                self._wan_usb_support = False
+        
         status.devices = list(devices.values())
         status.clients_total = status.wired_total + status.wifi_clients_total + status.guest_clients_total
 
@@ -406,6 +447,23 @@ class TPLinkMRClientBase(AbstractRouter):
 
         self.req_act(acts)
 
+    def set_ewan_connect(self, enable: bool) -> None:
+        # Find interface number of Ethernet uplink
+        acts = [
+            self.ActItem(self.ActItem.GL, 'WAN_COMMON_INTF_CFG', attrs=['WANAccessType'])
+        ]
+        _, values = self.req_act(acts)
+        i = 0
+        for intf in self._to_list(values):
+            i += 1
+            if intf.get('WANAccessType').lower() == 'ethernet':
+                break
+        dhcp_command = 'ACT_DHCP_RENEW' if enable else 'ACT_DHCP_RELEASE'
+        acts = [
+            self.ActItem(self.ActItem.OP, dhcp_command, '{},1,1,0,0,0'.format(i))
+        ]
+        self.req_act(acts)
+    
     @staticmethod
     def _fill_acts(acts: list) -> tuple[List[str], List[str]]:
         # Fill the act lists, to refactor for other subclasses.

@@ -58,10 +58,13 @@ class Status:
     _lan_macaddr: EUI48 = None
     _wan_ipv4_addr: IPv4Address | None = None
     _lan_ipv4_addr: IPv4Address | None = None
+    lan_ipv4_dhcp_enable: bool | None = None
     _wan_ipv4_gateway: IPv4Address | None = None
     wan_ipv6_enabled: bool | None = None
     _wan_ipv6_addr: IPv6Address | None = None
-    lan_ipv4_dhcp_enable: bool | None = None
+    ewan_connected: bool | None = None
+    usb_modem_state: str | None = None
+    wan_backup_enable: bool | None = None
     wired_total: int = 0
     wifi_clients_total: int = 0
     guest_clients_total: int = 0
