@@ -416,7 +416,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         if self._ipv4_dynamic:
             try:
                 wan_ipv4_dynamic = self.request(self._url_wan_ipv4_dynamic + '&operation=read', 'operation=read')
-                status.ewan_connected = wan_ipv4_dynamic.get('conn_status') = 'connected'
+                status.ewan_connected = wan_ipv4_dynamic.get('conn_status') == 'connected'
             except BaseException:
                 self._ipv4_dynamic = False
         
