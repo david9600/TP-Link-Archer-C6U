@@ -242,14 +242,14 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         self._sysauth = None
         self._data_block = 'data'
         self._smart_network = True
-        self._ipv4_dynamic = True
+        self._wan_ipv4_dynamic = True
         self._easymesh = True
         self._perf_status = True
         self._url_firmware = 'admin/firmware?form=upgrade&operation=read'
         self._url_ipv4_reservations = 'admin/dhcps?form=reservation&operation=load'
         self._url_ipv4_dhcp_leases = 'admin/dhcps?form=client&operation=load'
         self._url_ipv4_dhcps = 'admin/dhcps?form=setting'
-        self._url_ipv4_dynamic = 'admin/network?form=wan_ipv4_dynamic'
+        self._url_wan_ipv4_dynamic = 'admin/network?form=wan_ipv4_dynamic'
         self._url_smart_network = 'admin/smart_network?form=game_accelerator&operation=loadDevice'
         self._url_easymesh_device_list = 'admin/easymesh_network?form=get_mesh_device_list_all&operation=read'
         self._url_openvpn = 'admin/openvpn?form=config&operation=read'
@@ -412,13 +412,6 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
                 status.cpu_usage = performance.get('cpu_usage')
             except BaseException:
                 self._perf_status = False
-
-        if self._ipv4_dynamic:
-            try:
-                wan_ipv4_dynamic = self.request(self._url_wan_ipv4_dynamic + '&operation=read', 'operation=read')
-                status.ewan_connected = wan_ipv4_dynamic.get('conn_status') == 'connected'
-            except BaseException:
-                self._ipv4_dynamic = False
         
         devices = {}
 
@@ -483,6 +476,13 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         except Exception:
             # WiFi might be disabled on the router, skip wireless statistics
             pass
+
+        if self._wan_ipv4_dynamic:
+            try:
+                wan_ipv4_dynamic = self.request(self._url_wan_ipv4_dynamic + '&operation=read', 'operation=read')
+                status.ewan_connected = wan_ipv4_dynamic.get('conn_status') == 'connected'
+            except BaseException:
+                self._wan_ipv4_dynamic = False
 
         easymesh_device_list = None
         if self._easymesh:
