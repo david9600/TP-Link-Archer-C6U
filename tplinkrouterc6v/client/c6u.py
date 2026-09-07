@@ -477,6 +477,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             # WiFi might be disabled on the router, skip wireless statistics
             pass
 
+        # Get WAN connected status (for DHCP release/renew)
         if self._wan_ipv4_dynamic:
             try:
                 wan_ipv4_dynamic = self.request(self._url_wan_ipv4_dynamic + '&operation=read', 'operation=read')
