@@ -177,7 +177,7 @@ class TplinkC80Router(AbstractRouter):
             'wan_ip': extract_value(data_blocks[wan_ip_request], "ip "),
             'gateway_ip': extract_value(data_blocks[wan_ip_request], "gateway "),
             'uptime': extract_value(data_blocks[wan_ip_request], "upTime "),
-            'wan_enable' : extract_value(data_blocks[wan_link_request], "enable "),
+            'wan_status' : extract_value(data_blocks[wan_ip_request], "status "),
             'wan_link_type' : extract_value(data_blocks[wan_link_request], "linkType "),
             'ipv4_dhcp' : extract_value(data_blocks[RouterConstants.IPV4_DHCPS_REQUEST], "enable ")
         }
@@ -191,7 +191,7 @@ class TplinkC80Router(AbstractRouter):
 
         mapped_devices = self._parse_devices(device_data_response)
 
-        self._logger.info('wan enable: %s, wan link type: %s', network_info['wan_enable'], network_info['wan_link_type'])
+        self._logger.info('wan enable: %s, wan link type: %s', network_info['wan_status'], network_info['wan_link_type'])
 
         status = Status()
         status._wan_macaddr = get_mac(network_info['wan_mac'])
@@ -200,7 +200,7 @@ class TplinkC80Router(AbstractRouter):
         status._wan_ipv4_addr = get_ip(network_info['wan_ip'])
         status._wan_ipv4_gateway = get_ip(network_info['gateway_ip'])
         status.wan_ipv4_uptime = int(network_info['uptime']) // 100
-        status.ewan_connected = network_info['wan_enable'] == '1' if network_info['wan_link_type'] == '0' else False
+        status.ewan_connected = network_info['wan_status'] == '1' if network_info['wan_link_type'] == '0' else False
         status.lan_ipv4_dhcp_enable = network_info['ipv4_dhcp'] == '1'
 
         status.wifi_2g_enable = wifi_status[Connection.HOST_2G]
