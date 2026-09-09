@@ -156,7 +156,7 @@ class TplinkC80Router(AbstractRouter):
         test_request = '21|1,0,0'
 
         all_requests = [
-            mac_info_request, lan_ip_request, wan_link_request, wan_ip_request, device_data_request, test_request,
+            mac_info_request, lan_ip_request, wan_link_request, wan_ip_request, device_data_request,
             RouterConstants.IPV4_DHCPS_REQUEST,
             RouterConstants.HOST_WIFI_2G_REQUEST, RouterConstants.HOST_WIFI_5G_REQUEST,
             RouterConstants.GUEST_WIFI_2G_REQUEST, RouterConstants.GUEST_WIFI_5G_REQUEST,
@@ -167,7 +167,6 @@ class TplinkC80Router(AbstractRouter):
 
         self._logger.info('wan ip block: %s', data_blocks[wan_ip_request])
         self._logger.info('wan link block: %s', data_blocks[wan_link_request])
-        self._logger.info('test block: %s', data_blocks[test_request])
 
         def extract_value(response_list, prefix):
             return next((s.split(prefix, 1)[1] for s in response_list if s.startswith(prefix)), None)
@@ -298,8 +297,8 @@ class TplinkC80Router(AbstractRouter):
 
     def set_ewan_connect(self, enable: bool) -> None:
         enable_string = f'enable {int(enable)}'
-        wan_request = "21|1,0,0"
-        text = f'id {wan_request}\r\n{enable_string}'
+        wan_link_request = "23|1,0,0"
+        text = f'id {wan_link_request}\r\n{enable_string}'
         body = self._encrypt_body(text)
         self.request(0, 0, True, data=body)
 
