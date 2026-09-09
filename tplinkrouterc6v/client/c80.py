@@ -156,7 +156,7 @@ class TplinkC80Router(AbstractRouter):
         test_request = '21|1,0,0'
 
         all_requests = [
-            mac_info_request, lan_ip_request, wan_link_request, wan_ip_request, device_data_request, test_request_request,
+            mac_info_request, lan_ip_request, wan_link_request, wan_ip_request, device_data_request, test_request,
             RouterConstants.IPV4_DHCPS_REQUEST,
             RouterConstants.HOST_WIFI_2G_REQUEST, RouterConstants.HOST_WIFI_5G_REQUEST,
             RouterConstants.GUEST_WIFI_2G_REQUEST, RouterConstants.GUEST_WIFI_5G_REQUEST,
