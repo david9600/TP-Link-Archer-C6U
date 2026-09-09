@@ -163,7 +163,7 @@ class TplinkC80Router(AbstractRouter):
         request_text = '#'.join(all_requests)
         data_blocks = self._return_data_block(request_text)
 
-        self._logger.info('wan ip block: %s', data_blocks['wan_ip_request'])
+        self._logger.info('wan ip block: %s', data_blocks[wan_ip_request])
 
         def extract_value(response_list, prefix):
             return next((s.split(prefix, 1)[1] for s in response_list if s.startswith(prefix)), None)
