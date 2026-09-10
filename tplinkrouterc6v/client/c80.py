@@ -150,7 +150,6 @@ class TplinkC80Router(AbstractRouter):
     def _get_status_with_wifi(self) -> Status:
         mac_info_request = "1|1,0,0"
         lan_ip_request = "4|1,0,0"
-        wan_link_request = "22|1,0,0"
         wan_ip_request = "23|1,0,0"
         device_data_request = '13|1,0,0'
         test_request = '21|1,0,0'
@@ -160,9 +159,6 @@ class TplinkC80Router(AbstractRouter):
         ]
         request_text = '#'.join(all_requests)
         data_blocks = self._return_data_block(request_text)
-
-        self._logger.info('wan ip block: %s', data_blocks[wan_ip_request])
-        self._logger.info('wan link block: %s', data_blocks[wan_link_request])
 
         def extract_value(response_list, prefix):
             return next((s.split(prefix, 1)[1] for s in response_list if s.startswith(prefix)), None)
@@ -174,8 +170,7 @@ class TplinkC80Router(AbstractRouter):
             'wan_ip': extract_value(data_blocks[wan_ip_request], "ip "),
             'gateway_ip': extract_value(data_blocks[wan_ip_request], "gateway "),
             'uptime': extract_value(data_blocks[wan_ip_request], "upTime "),
-            'wan_status' : extract_value(data_blocks[wan_ip_request], "status "),
-            'wan_link_type' : extract_value(data_blocks[wan_link_request], "linkType ")
+            'wan_status' : extract_value(data_blocks[wan_ip_request], "status ")
         }
 
         wifi_status = {}
@@ -189,7 +184,7 @@ class TplinkC80Router(AbstractRouter):
         status._wan_ipv4_addr = get_ip(network_info['wan_ip'])
         status._wan_ipv4_gateway = get_ip(network_info['gateway_ip'])
         status.wan_ipv4_uptime = int(network_info['uptime']) // 100
-        status.ewan_connected = network_info['wan_status'] == '1' if network_info['wan_link_type'] == '0' else False
+        status.ewan_connected = network_info['wan_status'] == '1'
 
         if self._ipv6_support:
             ipv6_request_text = '#'.join([
@@ -265,11 +260,8 @@ class TplinkC80Router(AbstractRouter):
 
     def set_ewan_connect(self, enable: bool) -> None:
         text = 'wan -linkUp' if enable else 'wan -linkDown'
-        self._logger.info('text: %s', text)
         body = self._encrypt_body(text)
-        response = self.request(0, 0, True, data=body)
-        response_text = self._decrypt_data(response.text)
-        self._logger.info('response text: %s', response_text)
+        self.request(0, 0, True, data=body)
 
     def set_ipv4_dhcps(self, enable: bool) -> None:
         enable_string = f'enable {int(enable)}'
