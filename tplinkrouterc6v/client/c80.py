@@ -190,7 +190,6 @@ class TplinkC80Router(AbstractRouter):
         status._wan_ipv4_gateway = get_ip(network_info['gateway_ip'])
         status.wan_ipv4_uptime = int(network_info['uptime']) // 100
         status.ewan_connected = network_info['wan_status'] == '1' if network_info['wan_link_type'] == '0' else False
-        status.lan_ipv4_dhcp_enable = network_info['ipv4_dhcp'] == '1'
 
         if self._ipv6_support:
             ipv6_request_text = '#'.join([
