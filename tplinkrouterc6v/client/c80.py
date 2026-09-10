@@ -156,11 +156,7 @@ class TplinkC80Router(AbstractRouter):
         test_request = '21|1,0,0'
 
         all_requests = [
-            mac_info_request, lan_ip_request, wan_link_request, wan_ip_request, device_data_request,
-            RouterConstants.IPV4_DHCPS_REQUEST,
-            RouterConstants.HOST_WIFI_2G_REQUEST, RouterConstants.HOST_WIFI_5G_REQUEST,
-            RouterConstants.GUEST_WIFI_2G_REQUEST, RouterConstants.GUEST_WIFI_5G_REQUEST,
-            RouterConstants.IOT_WIFI_2G_REQUEST, RouterConstants.IOT_WIFI_5G_REQUEST
+            mac_info_request, lan_ip_request, wan_link_request, wan_ip_request
         ]
         request_text = '#'.join(all_requests)
         data_blocks = self._return_data_block(request_text)
@@ -184,13 +180,6 @@ class TplinkC80Router(AbstractRouter):
         }
 
         wifi_status = {}
-        for key, request in RouterConstants.CONNECTION_REQUESTS_MAP.items():
-            value = data_blocks.get(request)
-            wifi_status[key] = extract_value(data_blocks.get(request), "bEnable ") == '1' if value else None
-
-        device_data_response = data_blocks[device_data_request]
-
-        mapped_devices = self._parse_devices(device_data_response)
 
         self._logger.info('wan enable: %s, wan link type: %s', network_info['wan_status'], network_info['wan_link_type'])
 
@@ -203,25 +192,6 @@ class TplinkC80Router(AbstractRouter):
         status.wan_ipv4_uptime = int(network_info['uptime']) // 100
         status.ewan_connected = network_info['wan_status'] == '1' if network_info['wan_link_type'] == '0' else False
         status.lan_ipv4_dhcp_enable = network_info['ipv4_dhcp'] == '1'
-
-        status.wifi_2g_enable = wifi_status[Connection.HOST_2G]
-        status.wifi_5g_enable = wifi_status[Connection.HOST_5G]
-        status.guest_2g_enable = wifi_status[Connection.GUEST_2G]
-        status.guest_5g_enable = wifi_status[Connection.GUEST_5G]
-        status.iot_2g_enable = wifi_status[Connection.IOT_2G]
-        status.iot_5g_enable = wifi_status[Connection.IOT_5G]
-
-        status.wired_total = sum(1 for device in mapped_devices if device.type == Connection.WIRED)
-        status.wifi_clients_total = sum(1 for device in mapped_devices
-                                        if device.type in (Connection.HOST_2G, Connection.HOST_5G))
-        status.guest_clients_total = sum(1 for device in mapped_devices
-                                         if device.type in (Connection.GUEST_2G, Connection.GUEST_5G))
-        status.iot_clients_total = sum(1 for device in mapped_devices
-                                       if device.type in (Connection.IOT_2G, Connection.IOT_5G))
-        status.clients_total = (status.wired_total + status.wifi_clients_total +
-                                status.guest_clients_total + status.iot_clients_total)
-
-        status.devices = mapped_devices
 
         if self._ipv6_support:
             ipv6_request_text = '#'.join([
