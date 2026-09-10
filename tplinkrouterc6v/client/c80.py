@@ -175,8 +175,7 @@ class TplinkC80Router(AbstractRouter):
             'gateway_ip': extract_value(data_blocks[wan_ip_request], "gateway "),
             'uptime': extract_value(data_blocks[wan_ip_request], "upTime "),
             'wan_status' : extract_value(data_blocks[wan_ip_request], "status "),
-            'wan_link_type' : extract_value(data_blocks[wan_link_request], "linkType "),
-            'ipv4_dhcp' : extract_value(data_blocks[RouterConstants.IPV4_DHCPS_REQUEST], "enable ")
+            'wan_link_type' : extract_value(data_blocks[wan_link_request], "linkType ")
         }
 
         wifi_status = {}
