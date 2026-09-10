@@ -300,7 +300,8 @@ class TplinkC80Router(AbstractRouter):
         wan_link_request = "22|1,0,0"
         text = f'id {wan_link_request}\r\n{enable_string}\r\nneedPnpDetect 0\r\nlinkMode 0\r\nlinkType 0'
         body = self._encrypt_body(text)
-        self.request(0, 0, True, data=body)
+        response = self.request(0, 0, True, data=body)
+        response_text = self._decrypt_data(response.text)
 
     def set_ipv4_dhcps(self, enable: bool) -> None:
         enable_string = f'enable {int(enable)}'
@@ -528,10 +529,10 @@ class TplinkC80Router(AbstractRouter):
 
     def _return_data_block(self, request_text: str) -> dict[str, str]:
         body = self._encrypt_body(request_text)
-
         response = self.request(2, 1, True, data=body)
         response_text = self._decrypt_data(response.text)
 
+        self._logger.info('response text: %s', response_text)
         matches = TplinkC80Router.DATA_REGEX.findall(response_text)
 
         return {match[0]: match[1].strip().split("\r\n") for match in matches}
