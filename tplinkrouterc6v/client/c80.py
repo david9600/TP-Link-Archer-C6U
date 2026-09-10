@@ -297,8 +297,8 @@ class TplinkC80Router(AbstractRouter):
 
     def set_ewan_connect(self, enable: bool) -> None:
         enable_string = f'enable {int(enable)}'
-        wan_link_request = "23|1,0,0"
-        text = f'id {wan_link_request}\r\n{enable_string}'
+        wan_link_request = "22|1,0,0"
+        text = f'id {wan_link_request}\r\n{enable_string}\r\nneedPnpDetect 0\r\nlinkMode 0\r\nlinkType 0'
         body = self._encrypt_body(text)
         self.request(0, 0, True, data=body)
 
