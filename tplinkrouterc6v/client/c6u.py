@@ -724,6 +724,11 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         })
         self.request(self._url_vpn_client_user_list, payload)
 
+    def set_ewan_connect(self, enable: bool) -> None:
+        op = 'renew' if enable else 'release'
+        # self.request(self._url_wan_ipv4_dynamic + '&operation=' + op, 'operation=' + op)
+        self.request(self._url_wan_ipv4_dynamic, 'operation=' + op)
+
     def set_ipv4_dhcps(self, enable: bool) -> None:
         data = self.request(self._url_ipv4_dhcps, 'operation=read')
         payload = urlencode({
@@ -737,10 +742,6 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             'ipaddr_end': data.get('ipaddr_end'),
         })
         self.request(self._url_ipv4_dhcps, payload)
-
-    def set_ewan_connect(self, enable: bool) -> None:
-        op = 'renew' if enable else 'release'
-        self.request(self._url_wan_ipv4_dynamic + '&operation=' + op, 'operation=' + op)
     
     @staticmethod
     def _str2bool(v) -> bool | None:
