@@ -179,8 +179,9 @@ class TplinkC80Router(AbstractRouter):
         lan_ip_request = "4|1,0,0"
         wan_ip_request = "23|1,0,0"
         device_data_request = '13|1,0,0'
+        sixty_request = '60|1,0,0'
         all_requests = [
-            mac_info_request, lan_ip_request, wan_ip_request, device_data_request,
+            mac_info_request, lan_ip_request, wan_ip_request, device_data_request, sixty_request,
             RouterConstants.HOST_WIFI_2G_REQUEST, RouterConstants.HOST_WIFI_5G_REQUEST,
             RouterConstants.GUEST_WIFI_2G_REQUEST, RouterConstants.GUEST_WIFI_5G_REQUEST,
             RouterConstants.IOT_WIFI_2G_REQUEST, RouterConstants.IOT_WIFI_5G_REQUEST
@@ -190,6 +191,8 @@ class TplinkC80Router(AbstractRouter):
 
         def extract_value(response_list, prefix):
             return next((s.split(prefix, 1)[1] for s in response_list if s.startswith(prefix)), None)
+
+        self._logger.info('id 60: %s', data_blocks[sixty_request])
 
         network_info = {
             'lan_mac': extract_value(data_blocks[mac_info_request], "mac 0 "),
