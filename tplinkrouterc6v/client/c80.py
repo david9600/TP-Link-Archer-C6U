@@ -294,6 +294,7 @@ class TplinkC80Router(AbstractRouter):
                 self._ipv6_support = False
                 return
             ipv6_wan_info = self._parse_last_values_from_block(wan_lines)
+            self._logger.info('ipv6 wan info: %s', ipv6_wan_info)
             # Match get_ipv6_status: any non-'0' status means IPv6 is enabled.
             status.wan_ipv6_enabled = ipv6_wan_info.get('status', '0') != '0'
             status._wan_ipv6_addr = get_ipv6(ipv6_wan_info.get('globalIp', '::'))
