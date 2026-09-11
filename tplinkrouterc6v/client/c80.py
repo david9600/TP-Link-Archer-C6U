@@ -5,20 +5,19 @@ import re
 import requests
 from urllib.parse import urlparse
 from requests import Session
-from tplinkrouterc6v.common.helper import get_ip, get_ipv6, get_mac
-from tplinkrouterc6v.common.package_enum import Connection
-from tplinkrouterc6v.common.exception import ClientException
-from tplinkrouterc6v.common.encryption import EncryptionWrapper
-from tplinkrouterc6v.common.dataclass import Firmware, Status, IPv4Status, IPv6Status, IPv4Reservation
-from tplinkrouterc6v.common.dataclass import IPv4DHCPLease, Device, VPNStatus
-from tplinkrouterc6v.client_abstract import AbstractRouter
+from tplinkrouterc6u.common.helper import get_ip, get_ipv6, get_mac
+from tplinkrouterc6u.common.package_enum import Connection
+from tplinkrouterc6u.common.exception import ClientException
+from tplinkrouterc6u.common.encryption import EncryptionWrapper
+from tplinkrouterc6u.common.dataclass import Firmware, Status, IPv4Status, IPv6Status, IPv4Reservation
+from tplinkrouterc6u.common.dataclass import IPv4DHCPLease, Device, VPNStatus
+from tplinkrouterc6u.client_abstract import AbstractRouter
 
 
 class RouterConstants:
     AUTH_TOKEN_INDEX1 = 3
     AUTH_TOKEN_INDEX2 = 4
 
-    IPV4_DHCPS_REQUEST = '8|1,0,0'
     HOST_WIFI_2G_REQUEST = '33|1,1,0'
     HOST_WIFI_5G_REQUEST = '33|2,1,0'
     GUEST_WIFI_2G_REQUEST = '33|1,2,0'
@@ -85,11 +84,39 @@ class TplinkC80Router(AbstractRouter):
                  verify_ssl: bool = True, timeout: int = 30) -> None:
         super().__init__(host, password, username, logger, verify_ssl, timeout)
         self._session = Session()
-        if self._verify_ssl is False:
+        # Only HTTPS needs a custom SSL context (legacy renegotiation). Building it
+        # via create_default_context does blocking CA disk I/O that Home Assistant
+        # flags when the client is constructed on the event loop (#217). HTTP hosts
+        # never need that work.
+        if self.host.startswith('https://'):
+            self._session.verify = TplinkC80Router._build_ssl_context(self._verify_ssl)
+        elif self._verify_ssl is False:
             self._session.verify = False
         self._encryption = EncryptionState()
         self._wifi_request = None
         self._ipv6_support = True
+
+    @staticmethod
+    def _build_ssl_context(verify_ssl: bool):
+        import ssl
+
+        # Build manually instead of create_default_context(): that helper always
+        # loads system CAs from disk (load_default_certs / set_default_verify_paths),
+        # which HA detects as a blocking call on the event loop (#217). Load CAs
+        # only when certificate verification is enabled.
+        ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        # C80 routers use OpenSSL legacy renegotiation, disabled by default on
+        # Python 3.14+ (UNSAFE_LEGACY_RENEGOTIATION_DISABLED).
+        if hasattr(ssl, 'OP_LEGACY_SERVER_CONNECT'):
+            ctx.options |= ssl.OP_LEGACY_SERVER_CONNECT
+        if verify_ssl is False:
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+        else:
+            ctx.check_hostname = True
+            ctx.verify_mode = ssl.CERT_REQUIRED
+            ctx.load_default_certs()
+        return ctx
 
     def supports(self) -> bool:
         try:
@@ -141,10 +168,10 @@ class TplinkC80Router(AbstractRouter):
                         parse.unquote(device_datamap['softVer']))
 
     def get_status(self) -> Status:
-        
         if self._wifi_request is None:
             request = '13|1,0,0'
             self._wifi_request = request in self._return_data_block(request)
+
         return self._get_status_with_wifi() if self._wifi_request else self._get_status_without_wifi()
 
     def _get_status_with_wifi(self) -> Status:
@@ -152,10 +179,11 @@ class TplinkC80Router(AbstractRouter):
         lan_ip_request = "4|1,0,0"
         wan_ip_request = "23|1,0,0"
         device_data_request = '13|1,0,0'
-        test_request = '21|1,0,0'
-
         all_requests = [
-            mac_info_request, lan_ip_request, wan_link_request, wan_ip_request
+            mac_info_request, lan_ip_request, wan_ip_request, device_data_request,
+            RouterConstants.HOST_WIFI_2G_REQUEST, RouterConstants.HOST_WIFI_5G_REQUEST,
+            RouterConstants.GUEST_WIFI_2G_REQUEST, RouterConstants.GUEST_WIFI_5G_REQUEST,
+            RouterConstants.IOT_WIFI_2G_REQUEST, RouterConstants.IOT_WIFI_5G_REQUEST
         ]
         request_text = '#'.join(all_requests)
         data_blocks = self._return_data_block(request_text)
@@ -174,8 +202,13 @@ class TplinkC80Router(AbstractRouter):
         }
 
         wifi_status = {}
+        for key, request in RouterConstants.CONNECTION_REQUESTS_MAP.items():
+            value = data_blocks.get(request)
+            wifi_status[key] = extract_value(data_blocks.get(request), "bEnable ") == '1' if value else None
 
-        self._logger.info('wan enable: %s, wan link type: %s', network_info['wan_status'], network_info['wan_link_type'])
+        device_data_response = data_blocks[device_data_request]
+
+        mapped_devices = self._parse_devices(device_data_response)
 
         status = Status()
         status._wan_macaddr = get_mac(network_info['wan_mac'])
@@ -186,18 +219,25 @@ class TplinkC80Router(AbstractRouter):
         status.wan_ipv4_uptime = int(network_info['uptime']) // 100
         status.ewan_connected = network_info['wan_status'] == '1'
 
-        if self._ipv6_support:
-            ipv6_request_text = '#'.join([
-                RouterConstants.IPV6_WAN_REQUEST,
-            ])
-            data_blocks = self._return_data_block(ipv6_request_text)
-            if data_blocks:
-                ipv6_wan_info = self._parse_last_values_from_block(data_blocks.get(RouterConstants.IPV6_WAN_REQUEST, []))
-                status.wan_ipv6_enabled = int(ipv6_wan_info.get('status', '0')) != 0
-                status._wan_ipv6_addr = get_ipv6(ipv6_wan_info.get('globalIp', '::'))
-            else:
-                self._ipv6_support = False
-        
+        status.wifi_2g_enable = wifi_status[Connection.HOST_2G]
+        status.wifi_5g_enable = wifi_status[Connection.HOST_5G]
+        status.guest_2g_enable = wifi_status[Connection.GUEST_2G]
+        status.guest_5g_enable = wifi_status[Connection.GUEST_5G]
+        status.iot_2g_enable = wifi_status[Connection.IOT_2G]
+        status.iot_5g_enable = wifi_status[Connection.IOT_5G]
+
+        status.wired_total = sum(1 for device in mapped_devices if device.type == Connection.WIRED)
+        status.wifi_clients_total = sum(1 for device in mapped_devices
+                                        if device.type in (Connection.HOST_2G, Connection.HOST_5G))
+        status.guest_clients_total = sum(1 for device in mapped_devices
+                                         if device.type in (Connection.GUEST_2G, Connection.GUEST_5G))
+        status.iot_clients_total = sum(1 for device in mapped_devices
+                                       if device.type in (Connection.IOT_2G, Connection.IOT_5G))
+        status.clients_total = (status.wired_total + status.wifi_clients_total +
+                                status.guest_clients_total + status.iot_clients_total)
+
+        status.devices = mapped_devices
+        self._enrich_status_ipv6(status)
         return status
 
     def _get_status_without_wifi(self) -> Status:
@@ -221,6 +261,7 @@ class TplinkC80Router(AbstractRouter):
         status._wan_macaddr = get_mac(mac_info.get('mac 1', '00-00-00-00-00-00'))
         status._lan_ipv4_addr = get_ip(lan_info.get('ip') or self._host_ip())
         status._wan_ipv4_addr = get_ip(wan_info.get('ip') or self._host_ip())
+        status.ewan_connected = wan_info.get('status') == '1'
 
         gateway = wan_info.get('gateway') or lan_info.get('gateway')
         if gateway and gateway != '0.0.0.0':
@@ -234,20 +275,30 @@ class TplinkC80Router(AbstractRouter):
         status.clients_total = len(devices)
         status.wifi_2g_enable = True
         status.conn_type = 'Router/AP'
-
-        if self._ipv6_support:
-            ipv6_request_text = '#'.join([
-                RouterConstants.IPV6_WAN_REQUEST,
-            ])
-            data_blocks = self._return_data_block(ipv6_request_text)
-            if data_blocks:
-                ipv6_wan_info = self._parse_last_values_from_block(data_blocks.get(RouterConstants.IPV6_WAN_REQUEST, []))
-                status.wan_ipv6_enabled = int(ipv6_wan_info.get('status','0')) != 0
-                status._wan_ipv6_addr = get_ipv6(ipv6_wan_info.get('globalIp', '::'))
-            else:
-                self._ipv6_support = False
-
+        self._enrich_status_ipv6(status)
         return status
+
+    def _enrich_status_ipv6(self, status: Status) -> None:
+        """Fill Status IPv6 fields via a separate WAN probe.
+
+        Kept out of the main status batch: some firmwares reject unknown ids.
+        On failure or a response without the WAN IPv6 block, disable further
+        probes for this client instance (same pattern as MR _ipv6_support).
+        """
+        if not self._ipv6_support:
+            return
+        try:
+            data_blocks = self._return_data_block(RouterConstants.IPV6_WAN_REQUEST)
+            wan_lines = data_blocks.get(RouterConstants.IPV6_WAN_REQUEST) if data_blocks else None
+            if not wan_lines:
+                self._ipv6_support = False
+                return
+            ipv6_wan_info = self._parse_last_values_from_block(wan_lines)
+            # Match get_ipv6_status: any non-'0' status means IPv6 is enabled.
+            status.wan_ipv6_enabled = ipv6_wan_info.get('status', '0') != '0'
+            status._wan_ipv6_addr = get_ipv6(ipv6_wan_info.get('globalIp', '::'))
+        except Exception:
+            self._ipv6_support = False
 
     def reboot(self) -> None:
         self.request(6, 1, True)
@@ -262,13 +313,7 @@ class TplinkC80Router(AbstractRouter):
         text = 'wan -linkUp' if enable else 'wan -linkDown'
         body = self._encrypt_body(text)
         self.request(0, 0, True, data=body)
-
-    def set_ipv4_dhcps(self, enable: bool) -> None:
-        enable_string = f'enable {int(enable)}'
-        text = f'id {RouterConstants.IPV4_DHCPS_REQUEST}\r\n{enable_string}'
-        body = self._encrypt_body(text)
-        self.request(1, 0, True, data=body)
-
+    
     def get_ipv4_status(self) -> IPv4Status:
         mac_info_request = "1|1,0,0"
         lan_ip_request = "4|1,0,0"
@@ -354,8 +399,8 @@ class TplinkC80Router(AbstractRouter):
         return mapped_leases
 
     def get_ipv6_status(self) -> IPv6Status:
-        wan_ipv6_request = "45|1,0,0"
-        site_ipv6_request = "48|1,0,0"
+        wan_ipv6_request = RouterConstants.IPV6_WAN_REQUEST
+        site_ipv6_request = RouterConstants.IPV6_SITE_REQUEST
         all_requests = [
             wan_ipv6_request, site_ipv6_request]
         request_text = '#'.join(all_requests)
@@ -407,7 +452,7 @@ class TplinkC80Router(AbstractRouter):
         vpn_status.pptpvpn_enable = self._extract_value(data_blocks["22|1,0,0"], "linkType ") == '4'
 
         return vpn_status
-    
+
     def _parse_devices(self, device_data_response: list[str]) -> list[Device]:
         filtered_devices = self._parse_response_to_dict(device_data_response)
 
@@ -489,10 +534,10 @@ class TplinkC80Router(AbstractRouter):
 
     def _return_data_block(self, request_text: str) -> dict[str, str]:
         body = self._encrypt_body(request_text)
+
         response = self.request(2, 1, True, data=body)
         response_text = self._decrypt_data(response.text)
 
-        self._logger.info('response text: %s', response_text)
         matches = TplinkC80Router.DATA_REGEX.findall(response_text)
 
         return {match[0]: match[1].strip().split("\r\n") for match in matches}
@@ -526,7 +571,7 @@ class TplinkC80Router(AbstractRouter):
         if use_token:
             url += f"&id={self._encryption.token}"
         try:
-            response = self._session.post(url, data=data, timeout=self.timeout, verify=self._verify_ssl)
+            response = self._session.post(url, data=data, timeout=self.timeout, verify=self._session.verify)
             # Raises exception for 4XX/5XX status codes for all requests except 1st in authorize
             if not (code == 2 and asyn == 1 and use_token is False and data is None):
                 response.raise_for_status()
