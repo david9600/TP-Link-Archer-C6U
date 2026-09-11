@@ -480,9 +480,12 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         # Get WAN connected status (for DHCP release/renew)
         if self._wan_ipv4_dynamic:
             try:
-                wan_ipv4_dynamic = self.request(self._url_wan_ipv4_dynamic + '&operation=read', 'operation=read')
-                status.ewan_connected = wan_ipv4_dynamic.get('conn_status') == 'connected'
-            except BaseException:
+                wan_ipv4_dyn_response = self.request(self._url_wan_ipv4_dynamic + '&operation=read', 'operation=read')
+                if wan_ipv4_dyn_response:
+                    status.ewan_connected = wan_ipv4_dyn_response.get('conn_status') == 'connected'
+                else:
+                    self._wan_ipv4_dynamic = False
+            except Exception:
                 self._wan_ipv4_dynamic = False
 
         easymesh_device_list = None
@@ -735,6 +738,10 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         })
         self.request(self._url_ipv4_dhcps, payload)
 
+    def set_ewan_connect(self, enable: bool) -> None:
+        op = 'renew' if enable else 'release'
+        self.request(self._url_wan_ipv4_dynamic + '&operation=' + op, 'operation=' + op)
+    
     @staticmethod
     def _str2bool(v) -> bool | None:
         return str(v).lower() in ("yes", "true", "on") if v is not None else None
