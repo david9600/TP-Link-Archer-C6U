@@ -478,7 +478,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             pass
 
         # Get WAN connected status (for DHCP release/renew)
-        if self._wan_ipv4_dynamic:
+        if self._wan_ipv4_dynamic and data.get('wan_ipv4_conntype') == 'dhcp':
             try:
                 wan_ipv4_dyn_response = self.request(self._url_wan_ipv4_dynamic + '&operation=read', 'operation=read')
                 if wan_ipv4_dyn_response:
@@ -726,8 +726,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
 
     def set_ewan_connect(self, enable: bool) -> None:
         op = 'renew' if enable else 'release'
-        # self.request(self._url_wan_ipv4_dynamic + '&operation=' + op, 'operation=' + op)
-        self.request(self._url_wan_ipv4_dynamic, 'operation=' + op)
+        self.request(self._url_wan_ipv4_dynamic + '&operation=' + op, 'operation=' + op)
 
     def set_ipv4_dhcps(self, enable: bool) -> None:
         data = self.request(self._url_ipv4_dhcps, 'operation=read')
