@@ -271,6 +271,13 @@ class TPLinkMRClientBase(AbstractRouter):
             except Exception:
                 self._ipv6_support = False
 
+        wan_dsl_acts = [
+                self.ActItem(self.ActItem.GET, 'WAN_DSL_INTF_CFG'),
+                self.ActItem(self.ActItem.GET, 'WAN_DSL_INTF_STATS_TOTAL'),
+                ]
+        _, wan_dsl_values = self.req_act(wan_dsl_acts)
+        self._logger.info('wan dsl: %s', wan_dsl_values)
+
         # For routers with USB modem support, get modem state string and backup enabled status.
         if self._wan_usb_support:
             try:
