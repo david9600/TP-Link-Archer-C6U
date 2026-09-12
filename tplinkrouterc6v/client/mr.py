@@ -272,6 +272,7 @@ class TPLinkMRClientBase(AbstractRouter):
                 self._ipv6_support = False
 
         wan_dsl_acts = [
+                self.ActItem(self.ActItem.GL, 'WAN_COMMON_INTF_CFG'),
                 self.ActItem(self.ActItem.GET, 'WAN_DSL_INTF_CFG'),
                 self.ActItem(self.ActItem.GET, 'WAN_DSL_INTF_STATS_TOTAL'),
                 ]
