@@ -175,7 +175,7 @@ class TPLinkMRClientBase(AbstractRouter):
         ]
         _, values = self.req_act(acts)
 
-        self._logger.info('values: %s', values)
+        # self._logger.info('values: %s', values)
 
         if values['0'].__class__ == list:
             values['0'] = values['0'][0]
