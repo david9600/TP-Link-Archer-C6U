@@ -185,29 +185,29 @@ class TPLinkMRClientBase(AbstractRouter):
         status._lan_ipv4_addr = get_ip(values['0']['IPInterfaceIPAddress'])
 
         if self._wan_failover_support:
+            # Count number of eligible WAN interfaces (include 'lte' even if not currently enabled)
             wan_intf_count = 0
-            for item in self._to_list(values.get('1')):
-                # lte counts as potential wan, even if not currently enabled
-                if int(item.get('enable')) == 1 or 'lte' in item.get('X_TP_IfName'):
+            enabled_wan_intfs = []
+            for intf in self._to_list(values.get('1')):
+                if int(intf.get('enable')) == 1:
                     wan_intf_count += 1
-            self._logger.info('wan intf count: %s', wan_intf_count)
-            if wan_intf_count < 3:
+                    enabled_wan_intfs.append(intf)
+                elif 'lte' in intf.get('X_TP_IfName'):
+                    wan_intf_count += 1
+            if wan_intf_count < 2:
                 self._wan_failover_support = False
 
-        if self._wan_failover_support:
-            """ dual wan code goes here """
-            pass
+        self._logger.info('enabled wan intfs: %s', enabled_wan_intfs)
 
-        else:
-            for item in self._to_list(values.get('1')):
-                if int(item['enable']) == 0:
-                    continue
-                status._wan_macaddr = get_mac(item['MACAddress']) if item.get('MACAddress') else None
-                status._wan_ipv4_addr = get_ip(item['externalIPAddress'])
-                status._wan_ipv4_gateway = get_ip(item['defaultGateway'])
-                status.conn_type = item.get('name', '')
-                if 'eth' in item.get('X_TP_IfName', ''):
-                    status.ewan_connected = item.get('connectionStatus') == 'Connected'
+        for item in self._to_list(values.get('1')):
+            if int(item['enable']) == 0:
+                continue
+            status._wan_macaddr = get_mac(item['MACAddress']) if item.get('MACAddress') else None
+            status._wan_ipv4_addr = get_ip(item['externalIPAddress'])
+            status._wan_ipv4_gateway = get_ip(item['defaultGateway'])
+            status.conn_type = item.get('name', '')
+            if 'eth' in item.get('X_TP_IfName', ''):
+                status.ewan_connected = item.get('connectionStatus') == 'Connected'
 
         if values['2'].__class__ != list:
             status.wifi_2g_enable = bool(int(values['2']['enable']))
@@ -307,6 +307,7 @@ class TPLinkMRClientBase(AbstractRouter):
             except Exception:
                 self._wan_usb_support = False  
 
+        
         status.devices = list(devices.values())
         status.clients_total = status.wired_total + status.wifi_clients_total + status.guest_clients_total
 
