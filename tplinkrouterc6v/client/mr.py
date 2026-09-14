@@ -307,7 +307,7 @@ class TPLinkMRClientBase(AbstractRouter):
                 self._wan_usb_support = False  
 
         if self._wan_failover_support:
-            self._logger.debug('enabled wan intfs: %s', enabled_wan_intfs)
+            self._logger.info('enabled wan intfs: %s', enabled_wan_intfs)
             for intf in enabled_wan_intfs:
                 if 'eth' in intf.get('X_TP_IfName'):
                     status.ewan_connected = intf.get('connectionStatus') == 'Connected'
@@ -321,10 +321,10 @@ class TPLinkMRClientBase(AbstractRouter):
                 if wan_fwd_values:
                     ipv4_intf = wan_fwd_values.get('0').get('__ifAliasName')
                     ipv6_intf = wan_fwd_values.get('1').get('__ifAliasName')
-                    self._logger.debug('ipv4 intf: %s', ipv4_intf)
-                    self._logger.debug('ipv6 intf: %s', ipv6_intf)
+                    self._logger.info('ipv4 intf: %s', ipv4_intf)
+                    self._logger.info('ipv6 intf: %s', ipv6_intf)
                     for intf in self._to_list(enabled_wan_intfs):
-                        self._logger.debug('intf in for-loop is %s', intf)
+                        self._logger.info('intf in for-loop is %s', intf)
                         if intf.get('name') == ipv4_intf:
                             status._wan_ipv4_addr = get_ip(intf.get('externalIPAddress', '0.0.0.0'))
                         if intf.get('name') == ipv6_intf:
