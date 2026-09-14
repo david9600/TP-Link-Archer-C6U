@@ -200,7 +200,7 @@ class TPLinkMRClientBase(AbstractRouter):
 
         # Single-WAN status (some values may be updated later by dual WAN code which performs additional tests)
         for item in self._to_list(values.get('1')):
-            if int(item['enable']) == 0:
+            if int(item['enable']) == 0 and values.get('1').__class__ == list:
                 continue
             status._wan_macaddr = get_mac(item['MACAddress']) if item.get('MACAddress') else None
             status._wan_ipv4_addr = get_ip(item['externalIPAddress'])
