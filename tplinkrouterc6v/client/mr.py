@@ -100,6 +100,7 @@ class TPLinkMRClientBase(AbstractRouter):
         self._seq = None
         self._url_rsa_key = 'cgi/getParm'
         self._ipv6_support = True
+        self._wan_failover_support = True
         self._wan_usb_support = True
 
         self._encryption = EncryptionWrapperMR()
@@ -183,15 +184,28 @@ class TPLinkMRClientBase(AbstractRouter):
         status._lan_macaddr = get_mac(values['0']['X_TP_MACAddress'])
         status._lan_ipv4_addr = get_ip(values['0']['IPInterfaceIPAddress'])
 
-        for item in self._to_list(values.get('1')):
-            if int(item['enable']) == 0 and values.get('1').__class__ == list:
-                continue
-            status._wan_macaddr = get_mac(item['MACAddress']) if item.get('MACAddress') else None
-            status._wan_ipv4_addr = get_ip(item['externalIPAddress'])
-            status._wan_ipv4_gateway = get_ip(item['defaultGateway'])
-            status.conn_type = item.get('name', '')
-            if 'eth' in item.get('X_TP_IfName', ''):
-                status.ewan_connected = item.get('connectionStatus') == 'Connected'
+        if self._wan_failover_support:
+            wan_intf_count = 0
+            for item in self._to_list(values.get('1')):
+                if int(item.get('enable')) == 1 or 'lte' in item.get('X_TP_IfName'):
+                    wan_intf_count += 1
+            self._logger.info('wan intf count: %s', wan_intf_count)
+            if wan_intf_count > 1:
+                self._logger.info('support wan failover')
+
+            else:
+                self._wan_failover_support = False
+
+        if not self._wan_failover_support:
+            for item in self._to_list(values.get('1')):
+                if int(item['enable']) == 0:
+                    continue
+                status._wan_macaddr = get_mac(item['MACAddress']) if item.get('MACAddress') else None
+                status._wan_ipv4_addr = get_ip(item['externalIPAddress'])
+                status._wan_ipv4_gateway = get_ip(item['defaultGateway'])
+                status.conn_type = item.get('name', '')
+                if 'eth' in item.get('X_TP_IfName', ''):
+                    status.ewan_connected = item.get('connectionStatus') == 'Connected'
 
         if values['2'].__class__ != list:
             status.wifi_2g_enable = bool(int(values['2']['enable']))
