@@ -268,17 +268,17 @@ class TPLinkMRClientBase(AbstractRouter):
         # probe once and permanently disable further attempts on failure.
         if self._ipv6_support:
             try:
-                wan_aux_acts = [
+                wan_ipv6_acts = [
                     self.ActItem(
                         self.ActItem.GS,
                         'WAN_IP_CONN',
                         attrs=['enable', 'name', 'X_TP_IPv6Enabled', 'X_TP_ExternalIPv6Address'],
                     ),
                 ]
-                _, wan_aux_values = self.req_act(wan_aux_acts)
-                if wan_aux_values:
-                    for item in self._to_list(wan_aux_values):
-                        if int(item.get('enable', '0')) == 0 and wan_aux_values.__class__ == list:
+                _, wan_ipv6_values = self.req_act(wan_ipv6_acts)
+                if wan_ipv6_values:
+                    for item in self._to_list(wan_ipv6_values):
+                        if int(item.get('enable', '0')) == 0 and wan_ipv6_values.__class__ == list:
                             continue
                         status.wan_ipv6_enabled = bool(int(item.get('X_TP_IPv6Enabled', '0')))
                         status._wan_ipv6_addr = get_ipv6(item.get('X_TP_ExternalIPv6Address', '::'))
@@ -307,7 +307,7 @@ class TPLinkMRClientBase(AbstractRouter):
                             if self._ipv6_support:
                                 ipv6_intf = wan_fwd_values.get('1').get('__ifAliasName')
                                 self._logger.info('ipv6 intf: %s', ipv6_intf)
-                                for intf_v6 in wan_aux_values:
+                                for intf_v6 in wan_ipv6_values:
                                     if intf_v6.get('name') == ipv6_intf:
                                         self._logger.info('setting ipv6 info for %s', ipv6_intf)
                                         status.wan_ipv6_enabled = bool(int(intf_v6.get('X_TP_IPv6Enabled', '0')))
