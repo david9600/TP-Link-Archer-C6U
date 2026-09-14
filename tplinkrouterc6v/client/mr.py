@@ -286,26 +286,6 @@ class TPLinkMRClientBase(AbstractRouter):
             except Exception:
                 self._ipv6_support = False
 
-        # For routers with USB modem support, get modem state string and backup enabled status.
-        if self._wan_usb_support:
-            try:
-                wan_usb_acts = [
-                    self.ActItem(self.ActItem.GL, 'WAN_USB_3G_LINK_CFG',
-                        attrs=['enable', 'backupEnable', 'cardName'])]
-                _, wan_usb_values = self.req_act(wan_usb_acts)
-                if wan_usb_values:
-                    for item in self._to_list(wan_usb_values):
-                        if int(item['enable']) == 0:
-                            continue
-                        # self._logger.info('enabled item is %s', item)
-                        status.wan_backup_enable = item.get('backupEnable') == '1'
-                        # self._logger.info('status.wan_backup_enable is %s', status.wan_backup_enable)
-                        status.usb_modem_state = item.get('cardName', '')
-                else:
-                    self._wan_usb_support = False
-            except Exception:
-                self._wan_usb_support = False  
-
         if self._wan_failover_support:
             self._logger.info('enabled wan intfs: %s', enabled_wan_intfs)
             for intf in enabled_wan_intfs:
