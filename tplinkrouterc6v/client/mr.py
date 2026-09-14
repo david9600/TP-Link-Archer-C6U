@@ -185,19 +185,20 @@ class TPLinkMRClientBase(AbstractRouter):
         status._lan_ipv4_addr = get_ip(values['0']['IPInterfaceIPAddress'])
 
         if self._wan_failover_support:
-            # Count number of eligible WAN interfaces (include 'lte' even if not currently enabled)
+            # Count number of eligible interfaces. Include 'lte' (SIM or USB) even if not currently enabled.
             wan_intf_count = 0
-            # List of enabled interfaces, for dual WAN logic (during failover/failback, there can be more than one enabled)
-            enabled_wan_intfs = []
+            # List of enabled interfaces, for dual WAN logic (during failover/failback, there can be more than one enabled).
+            wan_intfs_enabled = []
             for intf in self._to_list(values.get('1')):
                 if int(intf.get('enable')) == 1:
                     wan_intf_count += 1
-                    enabled_wan_intfs.append(intf)
+                    wan_intfs_enabled.append(intf)
                 elif 'lte' in intf.get('X_TP_IfName'):
                     wan_intf_count += 1
             if wan_intf_count < 2:
                 self._wan_failover_support = False
 
+        # Single-WAN status (some values may be updated later by dual WAN code which performs additional tests)
         for item in self._to_list(values.get('1')):
             if int(item['enable']) == 0:
                 continue
@@ -287,11 +288,12 @@ class TPLinkMRClientBase(AbstractRouter):
                 self._ipv6_support = False
 
         if self._wan_failover_support:
-            self._logger.info('enabled wan intfs: %s', enabled_wan_intfs)
-            for intf in enabled_wan_intfs:
+            self._logger.info('wan intfs enabled: %s', wan_intfs_enabled)
+            # When more than one interface enabled, must test interface name
+            for intf in wan_intfs_enabled:
                 if 'eth' in intf.get('X_TP_IfName'):
                     status.ewan_connected = intf.get('connectionStatus') == 'Connected'
-            # When more than one WAN interface enabled, get status by reference to Layer 3 forwarding.
+            # When more than one interface enabled, status is by reference to Layer 3 forwarding.
             try:
                 wan_fwd_acts = [
                     self.ActItem(self.ActItem.GET, 'L3_FORWARDING', attrs=['__ifAliasName']), 
@@ -303,15 +305,13 @@ class TPLinkMRClientBase(AbstractRouter):
                     ipv6_intf = wan_fwd_values.get('1').get('__ifAliasName')
                     self._logger.info('ipv4 intf: %s', ipv4_intf)
                     self._logger.info('ipv6 intf: %s', ipv6_intf)
-                    for intf in self._to_list(enabled_wan_intfs):
+                    for intf in self._to_list(wan_intfs_enabled):
                         self._logger.info('intf in for-loop is %s', intf)
                         if intf.get('name') == ipv4_intf:
                             status._wan_ipv4_addr = get_ip(intf.get('externalIPAddress', '0.0.0.0'))
                         if intf.get('name') == ipv6_intf:
                             status.wan_ipv6_enabled = bool(int(intf.get('X_TP_IPv6Enabled', '0')))
                             status._wan_ipv6_addr = get_ipv6(intf.get('X_TP_ExternalIPv6Address', '::'))
-                else:
-                    self._wan_failover_support = False
             except:
                 self._wan_failover_support = False
         
