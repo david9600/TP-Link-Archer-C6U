@@ -288,8 +288,8 @@ class TPLinkMRClientBase(AbstractRouter):
                 self._ipv6_support = False
 
         if self._wan_failover_support:
+            # When more than one interface enabled, use Layer 3 forwarding states
             if len(wan_intfs_enabled) > 1:
-                # When more than one interface enabled, use Layer 3 forwarding states
                 try:
                     wan_fwd_acts = [
                         self.ActItem(self.ActItem.GET, 'L3_FORWARDING', attrs=['__ifAliasName']), 
