@@ -187,10 +187,11 @@ class TPLinkMRClientBase(AbstractRouter):
         if self._wan_failover_support:
             wan_intf_count = 0
             for item in self._to_list(values.get('1')):
+                # lte counts as potential wan, even if not currently enabled
                 if int(item.get('enable')) == 1 or 'lte' in item.get('X_TP_IfName'):
                     wan_intf_count += 1
             self._logger.info('wan intf count: %s', wan_intf_count)
-            if wan_intf_count < 2:
+            if wan_intf_count < 3:
                 self._wan_failover_support = False
 
         if self._wan_failover_support:
