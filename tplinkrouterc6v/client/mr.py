@@ -190,13 +190,13 @@ class TPLinkMRClientBase(AbstractRouter):
                 if int(item.get('enable')) == 1 or 'lte' in item.get('X_TP_IfName'):
                     wan_intf_count += 1
             self._logger.info('wan intf count: %s', wan_intf_count)
-            if wan_intf_count > 1:
+            if wan_intf_count > 2:
                 self._logger.info('support wan failover')
 
             else:
                 self._wan_failover_support = False
 
-        if not self._wan_failover_support:
+        else:
             for item in self._to_list(values.get('1')):
                 if int(item['enable']) == 0:
                     continue
