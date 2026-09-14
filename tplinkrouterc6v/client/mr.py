@@ -289,7 +289,7 @@ class TPLinkMRClientBase(AbstractRouter):
 
         if self._wan_failover_support:
             # When more than one interface enabled, need Layer 3 state for current IP addresses.
-            if len(wan_intfs_enabled) > 0:
+            if len(wan_intfs_enabled) > 1:
                 self._logger.info('more than one intf enabled')
                 try:
                     wan_fwd_acts = [
