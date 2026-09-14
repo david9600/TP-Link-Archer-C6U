@@ -288,32 +288,48 @@ class TPLinkMRClientBase(AbstractRouter):
                 self._ipv6_support = False
 
         if self._wan_failover_support:
-            self._logger.info('wan intfs enabled: %s', wan_intfs_enabled)
-            # When more than one interface enabled, must test interface name
-            for intf in wan_intfs_enabled:
-                if 'eth' in intf.get('X_TP_IfName'):
-                    status.ewan_connected = intf.get('connectionStatus') == 'Connected'
-            # When more than one interface enabled, status is by reference to Layer 3 forwarding.
+            if len(wan_intfs_enabled) > 1:
+                # When more than one interface enabled, use Layer 3 forwarding states
+                try:
+                    wan_fwd_acts = [
+                        self.ActItem(self.ActItem.GET, 'L3_FORWARDING', attrs=['__ifAliasName']), 
+                        self.ActItem(self.ActItem.GET, 'L3_IP6_FORWARDING', attrs=['__ifAliasName']),
+                    ]
+                    _, wan_fwd_values = self.req_act(wan_fwd_acts)
+                    if wan_fwd_values:
+                        ipv4_intf = wan_fwd_values.get('0').get('__ifAliasName')
+                        ipv6_intf = wan_fwd_values.get('1').get('__ifAliasName')
+                        self._logger.info('ipv4 intf: %s', ipv4_intf)
+                        self._logger.info('ipv6 intf: %s', ipv6_intf)
+                        for intf in self._to_list(wan_intfs_enabled):
+                            self._logger.info('intf in for-loop is %s', intf)
+                            if intf.get('name') == ipv4_intf:
+                                status._wan_ipv4_addr = get_ip(intf.get('externalIPAddress', '0.0.0.0'))
+                            if intf.get('name') == ipv6_intf:
+                                status.wan_ipv6_enabled = bool(int(intf.get('X_TP_IPv6Enabled', '0')))
+                                status._wan_ipv6_addr = get_ipv6(intf.get('X_TP_ExternalIPv6Address', '::'))
+                except:
+                    self._wan_failover_support = False
+        
+        # For routers with USB modem support, get modem state string and backup enabled status.
+        if self._wan_usb_support:
             try:
-                wan_fwd_acts = [
-                    self.ActItem(self.ActItem.GET, 'L3_FORWARDING', attrs=['__ifAliasName']), 
-                    self.ActItem(self.ActItem.GET, 'L3_IP6_FORWARDING', attrs=['__ifAliasName']),
-                ]
-                _, wan_fwd_values = self.req_act(wan_fwd_acts)
-                if wan_fwd_values:
-                    ipv4_intf = wan_fwd_values.get('0').get('__ifAliasName')
-                    ipv6_intf = wan_fwd_values.get('1').get('__ifAliasName')
-                    self._logger.info('ipv4 intf: %s', ipv4_intf)
-                    self._logger.info('ipv6 intf: %s', ipv6_intf)
-                    for intf in self._to_list(wan_intfs_enabled):
-                        self._logger.info('intf in for-loop is %s', intf)
-                        if intf.get('name') == ipv4_intf:
-                            status._wan_ipv4_addr = get_ip(intf.get('externalIPAddress', '0.0.0.0'))
-                        if intf.get('name') == ipv6_intf:
-                            status.wan_ipv6_enabled = bool(int(intf.get('X_TP_IPv6Enabled', '0')))
-                            status._wan_ipv6_addr = get_ipv6(intf.get('X_TP_ExternalIPv6Address', '::'))
-            except:
-                self._wan_failover_support = False
+                wan_usb_acts = [
+                    self.ActItem(self.ActItem.GL, 'WAN_USB_3G_LINK_CFG',
+                        attrs=['enable', 'backupEnable', 'cardName'])]
+                _, wan_usb_values = self.req_act(wan_usb_acts)
+                if wan_usb_values:
+                    for item in self._to_list(wan_usb_values):
+                        if int(item['enable']) == 0:
+                            continue
+                        # self._logger.info('enabled item is %s', item)
+                        status.wan_backup_enable = item.get('backupEnable') == '1'
+                        # self._logger.info('status.wan_backup_enable is %s', status.wan_backup_enable)
+                        status.usb_modem_state = item.get('cardName', '')
+                else:
+                    self._wan_usb_support = False
+            except Exception:
+                self._wan_usb_support = False
         
         status.devices = list(devices.values())
         status.clients_total = status.wired_total + status.wifi_clients_total + status.guest_clients_total
