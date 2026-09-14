@@ -187,6 +187,7 @@ class TPLinkMRClientBase(AbstractRouter):
         if self._wan_failover_support:
             # Count number of eligible WAN interfaces (include 'lte' even if not currently enabled)
             wan_intf_count = 0
+            # List of enabled interfaces, for dual WAN logic (during failover/failback, there can be more than one enabled)
             enabled_wan_intfs = []
             for intf in self._to_list(values.get('1')):
                 if int(intf.get('enable')) == 1:
@@ -196,8 +197,6 @@ class TPLinkMRClientBase(AbstractRouter):
                     wan_intf_count += 1
             if wan_intf_count < 2:
                 self._wan_failover_support = False
-
-        self._logger.info('enabled wan intfs: %s', enabled_wan_intfs)
 
         for item in self._to_list(values.get('1')):
             if int(item['enable']) == 0:
@@ -307,6 +306,34 @@ class TPLinkMRClientBase(AbstractRouter):
             except Exception:
                 self._wan_usb_support = False  
 
+        if self._wan_failover_support:
+            self._logger.debug('enabled wan intfs: %s', enabled_wan_intfs)
+            for intf in enabled_wan_intfs:
+                if 'eth' in intf.get('X_TP_IfName'):
+                    status.ewan_connected = intf.get('connectionStatus') == 'Connected'
+            # When more than one WAN interface enabled, get status by reference to Layer 3 forwarding.
+            try:
+                wan_fwd_acts = [
+                    self.ActItem(self.ActItem.GET, 'L3_FORWARDING', attrs=['__ifAliasName']), 
+                    self.ActItem(self.ActItem.GET, 'L3_IP6_FORWARDING', attrs=['__ifAliasName']),
+                ]
+                _, wan_fwd_values = self.req_act(wan_fwd_acts)
+                if wan_fwd_values:
+                    ipv4_intf = wan_fwd_values.get('0').get('__ifAliasName')
+                    ipv6_intf = wan_fwd_values.get('1').get('__ifAliasName')
+                    self._logger.debug('ipv4 intf: %s', ipv4_intf)
+                    self._logger.debug('ipv6 intf: %s', ipv6_intf)
+                    for intf in self._to_list(enabled_wan_intfs):
+                        self._logger.debug('intf in for-loop is %s', intf)
+                        if intf.get('name') == ipv4_intf:
+                            status._wan_ipv4_addr = get_ip(intf.get('externalIPAddress', '0.0.0.0'))
+                        if intf.get('name') == ipv6_intf:
+                            status.wan_ipv6_enabled = bool(int(intf.get('X_TP_IPv6Enabled', '0')))
+                            status._wan_ipv6_addr = get_ipv6(intf.get('X_TP_ExternalIPv6Address', '::'))
+                else:
+                    self._wan_failover_support = False
+            except:
+                self._wan_failover_support = False
         
         status.devices = list(devices.values())
         status.clients_total = status.wired_total + status.wifi_clients_total + status.guest_clients_total
