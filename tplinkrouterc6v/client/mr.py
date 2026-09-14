@@ -187,7 +187,7 @@ class TPLinkMRClientBase(AbstractRouter):
         if self._wan_failover_support:
             # Count number of eligible interfaces. Include 'lte' (SIM or USB) even if not currently enabled.
             wan_intf_count = 0
-            # List of enabled interfaces, for dual WAN logic (during failover/failback, there can be more than one enabled).
+            # List of enabled interfaces, for dual WAN logic (during failover, there is more than one enabled).
             wan_intfs_enabled = []
             for intf in self._to_list(values.get('1')):
                 if int(intf.get('enable')) == 1:
