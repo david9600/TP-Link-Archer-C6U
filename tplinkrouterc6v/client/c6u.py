@@ -42,7 +42,7 @@ class TplinkRequest:
 
         response = post(
             url,
-            json=self._prepare_data(data),
+            data=self._prepare_data(data),
             headers=self._headers_request,
             cookies={'sysauth': self._sysauth},
             timeout=self.timeout,
