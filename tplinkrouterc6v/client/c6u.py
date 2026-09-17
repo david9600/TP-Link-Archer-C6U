@@ -32,6 +32,9 @@ class TplinkRequest:
     def request(self, path: str, data: str, ignore_response: bool = False, ignore_errors: bool = False) -> dict | None:
         if self._logged is False:
             raise Exception('Not authorised')
+        
+        self._logger.info('path: %s', path)
+
         url = '{}/cgi-bin/luci/;stok={}/{}'.format(self.host, self._stok, path)
 
         self._logger.info('url is: %s', url)
