@@ -735,7 +735,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         path = self._url_ipv4_dhcps
         self._logger.info('path: %s', path)
 
-        response = self.request(self._url_ipv4_dhcps + '&operation=read', {"operation":"read"})
+        response = self.request(self._url_ipv4_dhcps + '&operation=read', 'operation=read')
 
         payload = {
             "operation": "write",
@@ -747,7 +747,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             "ipaddr_start": response.get("ipaddr_start"),
             "ipaddr_end": response.get("ipaddr_end"),
         }
-        # self.request(self._url_ipv4_dhcps, payload)
+        self.request(self._url_ipv4_dhcps + '&operation=write', payload)
     
     @staticmethod
     def _str2bool(v) -> bool | None:
