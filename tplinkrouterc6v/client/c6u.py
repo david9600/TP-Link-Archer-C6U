@@ -734,16 +734,18 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
     def set_ipv4_dhcps(self, enable: bool) -> None:
         path = self._url_ipv4_dhcps
         self._logger.info('path: %s', path)
+        
         response = self.request(self._url_ipv4_dhcps, {"operation":"read"})
+
         payload = {
-            'operation': 'write',
-            'enable': 'on' if enable else 'off',
-            'leasetime': response.get('leasetime'),
-            'pri_dns': response.get('pri_dns'),
-            'snd_dns': response.get('snd_dns'),
-            'gateway': response.get('gateway'),
-            'ipaddr_start': response.get('ipaddr_start'),
-            'ipaddr_end': response.get('ipaddr_end'),
+            "operation": "write",
+            "enable": "on" if enable else "off",
+            "leasetime": response.get("leasetime"),
+            "pri_dns": response.get("pri_dns"),
+            "snd_dns": response.get("snd_dns"),
+            "gateway": response.get("gateway"),
+            "ipaddr_start": response.get("ipaddr_start"),
+            "ipaddr_end": response.get("ipaddr_end"),
         }
         # self.request(self._url_ipv4_dhcps, payload)
     
