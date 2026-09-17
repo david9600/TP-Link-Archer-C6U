@@ -737,7 +737,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
 
         response = self.request(self._url_ipv4_dhcps + '&operation=read', 'operation=read')
 
-        payload = {
+        payload = urlencode({
             "operation": "write",
             "enable": "on" if enable else "off",
             "ipaddr_start": response.get('ipaddr_start'),
@@ -746,7 +746,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             "gateway": response.get('gateway', ''),
             "pri_dns": response.get('pri_dns', ''),
             "snd_dns": response.get('snd_dns', ''),
-        }
+        })
         self.request(self._url_ipv4_dhcps + '&operation=write', payload)
     
     @staticmethod
