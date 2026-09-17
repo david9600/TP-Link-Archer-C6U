@@ -784,7 +784,7 @@ class TplinkRouterJson(TplinkBaseRouter):
         super().__init__(host, password, username, logger, verify_ssl, timeout)
         self._headers_request['Content-Type'] = 'application/json'
 
-    def request(self, path: str, data: str, ignore_response: bool = False, ignore_errors: bool = False) -> dict | None:
+    def xrequest(self, path: str, data: str, ignore_response: bool = False, ignore_errors: bool = False) -> dict | None:
         # BE805 expects the payload to be a JSON object, even though the base class
         # typically sends form-urlencoded style strings (e.g. 'operation=read').
         # We intercept the request, parse the string to a dict, and convert to JSON.
