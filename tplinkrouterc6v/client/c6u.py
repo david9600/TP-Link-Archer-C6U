@@ -42,7 +42,7 @@ class TplinkRequest:
 
         response = post(
             url,
-            data=self._prepare_data(data),
+            json=self._prepare_data(data),
             headers=self._headers_request,
             cookies={'sysauth': self._sysauth},
             timeout=self.timeout,
@@ -738,7 +738,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         path = self._url_ipv4_dhcps
         self._logger.info('path: %s', path)
 
-        response = self.request(self._url_ipv4_dhcps + '&operation=read', 'operation=read')
+        response = self.request(self._url_ipv4_dhcps + '&operation=read', {"operation":"read"})
 
         payload = urlencode({
             "operation": "write",
