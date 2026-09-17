@@ -732,7 +732,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         self.request(self._url_wan_ipv4_dynamic + '&operation=' + op, 'operation=' + op)
 
     def set_ipv4_dhcps(self, enable: bool) -> None:
-        data = self.request(self._url_ipv4_dhcps, json='operation=read')
+        data = self.request(self._url_ipv4_dhcps, 'operation=read')
         payload = {
             'operation': 'write',
             'enable': 'on' if enable else 'off',
@@ -743,7 +743,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             'ipaddr_start': data.get('ipaddr_start'),
             'ipaddr_end': data.get('ipaddr_end'),
         }
-        self.request(self._url_ipv4_dhcps + '&operation=write', payload)
+        # self.request(self._url_ipv4_dhcps, json=payload)
     
     @staticmethod
     def _str2bool(v) -> bool | None:
