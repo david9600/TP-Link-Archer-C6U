@@ -740,12 +740,12 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         payload = {
             "operation": "write",
             "enable": "on" if enable else "off",
-            "leasetime": response.get('leasetime'),
-            "pri_dns": response.get('pri_dns', ''),
-            "snd_dns": response.get('snd_dns', ''),
-            "gateway": response.get('gateway', ''),
             "ipaddr_start": response.get('ipaddr_start'),
             "ipaddr_end": response.get('ipaddr_end'),
+            "leasetime": response.get('leasetime'),
+            "gateway": response.get('gateway', ''),
+            "pri_dns": response.get('pri_dns', ''),
+            "snd_dns": response.get('snd_dns', ''),
         }
         self.request(self._url_ipv4_dhcps + '&operation=write', payload)
     
