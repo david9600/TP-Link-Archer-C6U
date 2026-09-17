@@ -34,6 +34,8 @@ class TplinkRequest:
             raise Exception('Not authorised')
         url = '{}/cgi-bin/luci/;stok={}/{}'.format(self.host, self._stok, path)
 
+        self._logger.info('form data for POST request: %s', data)
+
         response = post(
             url,
             data=self._prepare_data(data),
