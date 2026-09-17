@@ -734,7 +734,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
     def set_ipv4_dhcps(self, enable: bool) -> None:
         data = self.request(self._url_ipv4_dhcps + '&operation=read', 'operation=read')
         payload = {
-            'operation': 'read',
+            'operation': 'write',
             'enable': 'on' if enable else 'off',
             'leasetime': data.get('leasetime'),
             'pri_dns': data.get('pri_dns'),
