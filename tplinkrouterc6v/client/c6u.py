@@ -738,7 +738,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         path = self._url_ipv4_dhcps
         self._logger.info('path: %s', path)
 
-        response = self.request(self._url_ipv4_dhcps + '&operation=read', {"operation":"read"})
+        response = self.request(self._url_ipv4_dhcps + '&operation=read', 'operation=read')
 
         payload = urlencode({
             "operation": "write",
@@ -747,8 +747,8 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             "ipaddr_end": response.get('ipaddr_end'),
             "leasetime": response.get('leasetime'),
             "gateway": response.get('gateway', ''),
-            "pri_dns": response.get('pri_dns', ''),
-            "snd_dns": response.get('snd_dns', ''),
+            #"pri_dns": response.get('pri_dns', ''),
+            #"snd_dns": response.get('snd_dns', ''),
         })
         self.request(self._url_ipv4_dhcps + '&operation=write', payload)
     
