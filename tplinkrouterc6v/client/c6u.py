@@ -732,6 +732,8 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         self.request(self._url_wan_ipv4_dynamic + '&operation=' + op, 'operation=' + op)
 
     def set_ipv4_dhcps(self, enable: bool) -> None:
+        path = self._url_ipv4_dhcps
+        self._logger.info('path: %s', path)
         data = self.request(self._url_ipv4_dhcps, 'operation=read')
         payload = {
             'operation': 'write',
