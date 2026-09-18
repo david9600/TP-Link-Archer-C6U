@@ -537,6 +537,8 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             self._easymesh = False
             return []
 
+        self._logger.info('easymesh device data: %s', data)
+
         mesh_nodes = []
         for item in data or []:
             mesh_node = MeshNode()
