@@ -34,12 +34,12 @@ class TplinkRequest:
         if self._logged is False:
             raise Exception('Not authorised')
         
-        self._logger.info('path: %s', path)
+        # self._logger.info('path: %s', path)
 
         url = '{}/cgi-bin/luci/;stok={}/{}'.format(self.host, self._stok, path)
 
-        self._logger.info('url is: %s', url)
-        self._logger.info('form data for POST request: %s', data)
+        # self._logger.info('url is: %s', url)
+        # self._logger.info('form data for POST request: %s', data)
 
         response = post(
             url,
@@ -779,7 +779,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
 
     def set_ipv4_dhcps(self, enable: bool) -> None:
         path = self._url_ipv4_dhcps
-        self._logger.info('path: %s', path)
+        # self._logger.info('path: %s', path)
 
         response = self.request(self._url_ipv4_dhcps + '&operation=read', 'operation=read')
 
