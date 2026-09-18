@@ -28,6 +28,7 @@ from tplinkrouterc6v.common.dataclass import (
     Firmware,
     Status,
     Device,
+    MeshNode,
     IPv4Reservation,
     IPv4DHCPLease,
     IPv4Status,
