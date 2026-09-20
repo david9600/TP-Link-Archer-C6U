@@ -543,7 +543,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             self._easymesh = False
             return []
 
-        self._logger.info('easymesh device list: %s', easymesh_device_list)
+        # self._logger.info('easymesh device list: %s', easymesh_device_list)
 
         mesh_nodes = []
         for ap in easymesh_device_list or []:
@@ -571,10 +571,13 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
 
             # 'sclient' is mesh main or satellite, 'nclient' is a network device
             sclient_detail = self.request(
-                'admin/easymesh_network?form=mesh_sclient_detail&operation=read&mac=' + ap['mac'],
+                'admin/easymesh_network?form=mesh_sclient_detail',
                 'operation=read&mac=' + ap['mac'])
 
             self._logger.info('sclient_detail: %s', sclient_detail)
+
+            for nclient in sclient_detail.get('mesh_nclient_list') or []:
+                    nclient_mac = nclient.get('mac')
 
         return mesh_nodes
     
