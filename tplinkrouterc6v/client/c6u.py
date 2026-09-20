@@ -516,7 +516,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
                         # prefix * helps identify and sort main node devices for display
                         devices[nclient['mac']].ap_name = '*'+ap['name']
         
-        self._logger.info('devices dict: %s', devices)
+        # self._logger.info('devices dict: %s', devices)
         status.devices = list(devices.values())
         # self._logger.info('list(devices.values()): %s', status.devices)
         status.clients_total = (status.wired_total + status.wifi_clients_total + status.guest_clients_total
@@ -577,7 +577,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
                 'admin/easymesh_network?form=mesh_sclient_detail&operation=read&mac=' + ap['mac'],
                 'operation=read&mac=' + ap['mac'])
 
-            self._logger.info('sclient_detail: %s', sclient_detail)
+            # self._logger.info('sclient_detail: %s', sclient_detail)
 
             for nclient in sclient_detail.get('mesh_nclient_list') or []:
                 nclient_mac = nclient.get('mac')
