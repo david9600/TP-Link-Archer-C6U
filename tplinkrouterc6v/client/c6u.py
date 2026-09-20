@@ -571,7 +571,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
 
             # 'sclient' is mesh main or satellite, 'nclient' is a network device
             sclient_detail = self.request(
-                'admin/easymesh_network?form=mesh_sclient_detail',
+                'admin/easymesh_network?form=mesh_sclient_detail&operation=read',
                 'operation=read&mac=' + ap['mac'])
 
             self._logger.info('sclient_detail: %s', sclient_detail)
