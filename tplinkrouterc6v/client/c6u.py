@@ -580,15 +580,18 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             self._logger.info('sclient_detail: %s', sclient_detail)
 
             for nclient in sclient_detail.get('mesh_nclient_list') or []:
+                nclient_mac = nclient.get('mac')
+                if not nclient_mac:
+                    continue
                 client_detail.append({
-                    "mac": nclient.get('mac'), 
+                    "mac": nclient_mac, 
                     "ap_name": ap.get('name'), 
                     "signal_strength": nclient.get('signal_strength')
                 })
 
-            self._logger.info('mesh_node: %s', mesh_node)
+            # self._logger.info('mesh_node: %s', mesh_node)
 
-            self._logger.info('client_detail: %s', client_detail)
+        self._logger.info('client_detail: %s', client_detail)
 
         return mesh_nodes, client_detail
     
