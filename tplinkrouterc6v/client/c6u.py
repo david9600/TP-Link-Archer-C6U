@@ -546,7 +546,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             mesh_node.support_reboot = ap.get('support_reboot')
             mesh_nodes.append(mesh_node)
 
-            # Build client list, with AP association and signal_strength details.
+            # Build client device list, with AP association and signal_strength details.
             try:
                 # 'sclient' is mesh main or satellite, 'nclient' is a network device
                 sclient_detail = self.request(
@@ -560,7 +560,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
                 if not nclient_mac:
                     continue
                 device_ap_assoc.append({
-                    "mac": nclient_mac, 
+                    "nclient_mac": nclient_mac, 
                     "ap_name": ap.get('name'), 
                     "signal_strength": nclient.get('signal_strength')
                 })
