@@ -569,6 +569,9 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             mesh_node.support_reboot = ap.get('support_reboot')
             mesh_nodes.append(mesh_node)
 
+            # node-to-device processing----------------
+            ap_associations = {}
+            
             # 'sclient' is mesh main or satellite, 'nclient' is a network device
             sclient_detail = self.request(
                 'admin/easymesh_network?form=mesh_sclient_detail&operation=read&mac=' + ap['mac'],
@@ -578,6 +581,9 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
 
             for nclient in sclient_detail.get('mesh_nclient_list') or []:
                     nclient_mac = nclient.get('mac')
+
+                    ap_associations[nclient_mac] = (ap.get('name'))
+            self._logger.info('ap_associations: %s', ap_associations)
 
         return mesh_nodes
     
