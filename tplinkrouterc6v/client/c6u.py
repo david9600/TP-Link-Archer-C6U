@@ -516,7 +516,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
 
         easymesh_device_list = None
         try:
-            easymesh_device_list = self.request(self._url_easymesh_device_list, 'operation=read')
+            easymesh_device_list = self.request(self._url_easymesh_device_lis, 'operation=read')
         except Exception:
             self._easymesh = False
             return []
