@@ -501,7 +501,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
 
         return status
 
-    def get_mesh_nodest(self) -> list[MeshNode]:
+    def get_mesh_nodes(self) -> list[MeshNode]:
         """Return the EasyMesh nodes reported by the main router.
 
         Returns an empty list on routers that do not run EasyMesh: they answer
@@ -516,13 +516,13 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
 
         easymesh_device_list = None
         try:
-            easymesh_device_list = self.request(self._url_easymesh_device_lis, 'operation=read')
+            easymesh_device_list = self.request(self._url_easymesh_device_list, 'operation=read')
         except Exception:
             self._easymesh = False
             return []
 
         mesh_nodes = []
-        client_ap_assoc = []
+        device_ap_assoc = []
         for ap in easymesh_device_list or []:
             mesh_node = MeshNode()
             mesh_node._macaddr = get_mac(ap['mac']) if ap.get('mac') else None
@@ -538,7 +538,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             mesh_node.connect_type = ap.get('connect_type')
             mesh_node.mesh_type = ap.get('mesh_type')
             mesh_node.client_num = int(ap['client_num']) if ap.get('client_num') is not None else None
-            # The payload key is signal_strength but the value is a 1..3 bar level, so it
+            # The payload key is signal_strength but the value is a bar level indicator, so it
             # lands in signal_level; signal_strength stays reserved for dBm. Absent on the
             # main router, which has no uplink of its own.
             mesh_node.signal_level = (
@@ -546,7 +546,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             mesh_node.support_reboot = ap.get('support_reboot')
             mesh_nodes.append(mesh_node)
 
-            # Build a list of clients with AP association and signal_strength details.
+            # Build client list, with AP association and signal_strength details.
             try:
                 # 'sclient' is mesh main or satellite, 'nclient' is a network device
                 sclient_detail = self.request(
@@ -559,15 +559,15 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
                 nclient_mac = nclient.get('mac')
                 if not nclient_mac:
                     continue
-                client_ap_assoc.append({
+                device_ap_assoc.append({
                     "mac": nclient_mac, 
                     "ap_name": ap.get('name'), 
                     "signal_strength": nclient.get('signal_strength')
                 })
 
-        self._logger.info('client_ap_assoc: %s', client_ap_assoc)
+        self._logger.info('device_ap_assoc: %s', device_ap_assoc)
 
-        return mesh_nodes, client_ap_assoc
+        return mesh_nodes, device_ap_assoc
     
     def get_ipv4_status(self) -> IPv4Status:
         ipv4_status = IPv4Status()
