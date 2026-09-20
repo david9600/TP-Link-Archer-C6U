@@ -516,8 +516,9 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
                         # prefix * helps identify and sort main node devices for display
                         devices[nclient['mac']].ap_name = '*'+ap['name']
         
+        self._logger.info('devices dict: %s', devices)
         status.devices = list(devices.values())
-        self._logger.info('list(devices.values()): %s', status.devices)
+        # self._logger.info('list(devices.values()): %s', status.devices)
         status.clients_total = (status.wired_total + status.wifi_clients_total + status.guest_clients_total
                                 + (status.iot_clients_total or 0))
 
