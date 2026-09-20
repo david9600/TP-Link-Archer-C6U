@@ -570,7 +570,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             mesh_nodes.append(mesh_node)
 
             # node-to-device processing----------------
-            ap_associations = {}
+            client_detail = {}
             
             # 'sclient' is mesh main or satellite, 'nclient' is a network device
             sclient_detail = self.request(
@@ -582,10 +582,10 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             for nclient in sclient_detail.get('mesh_nclient_list') or []:
                     nclient_mac = nclient.get('mac')
 
-                    ap_associations[nclient_mac] = (ap.get('name'))
-            self._logger.info('ap_associations: %s', ap_associations)
+                    client_detail[nclient_mac] = (ap.get('name'), nclient.get('signal_strength'))
+            self._logger.info('client_detail: %s', client_detail)
 
-        return mesh_nodes, ap_associations
+        return mesh_nodes, client_detail
     
     def get_ipv4_status(self) -> IPv4Status:
         ipv4_status = IPv4Status()
