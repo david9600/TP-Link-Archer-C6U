@@ -565,7 +565,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
                     "signal_strength": nclient.get('signal_strength')
                 })
 
-        self._logger.info('device_ap_assoc: %s', device_ap_assoc)
+        # self._logger.info('device_ap_assoc: %s', device_ap_assoc)
 
         return mesh_nodes, device_ap_assoc
     
