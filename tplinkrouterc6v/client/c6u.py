@@ -501,7 +501,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
 
         return status
 
-    def get_mesh_nodes(self) -> list[MeshNode]:
+    def get_mesh_nodest(self) -> list[MeshNode]:
         """Return the EasyMesh nodes reported by the main router.
 
         Returns an empty list on routers that do not run EasyMesh: they answer
