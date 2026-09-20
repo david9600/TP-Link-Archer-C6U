@@ -503,8 +503,9 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
                 self._easymesh = False
 
         if easymesh_device_list:
-            self._logger.info("Entering mesh node-to-device processing")
+            self._logger.info("Entering original mesh node-to-device processing")
             for ap in easymesh_device_list:
+                continue
                 # 'sclient' is mesh main or satellite, 'nclient' is a network device
                 sclient_detail = self.request('admin/easymesh_network?form=mesh_sclient_detail&operation=read&mac='+ap['mac'], 'operation=read&mac='+ap['mac'])
                 for nclient in sclient_detail['mesh_nclient_list']:
@@ -516,6 +517,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
                         devices[nclient['mac']].ap_name = '*'+ap['name']
         
         status.devices = list(devices.values())
+        self._logger.info('list(devices.values()): %s', status.devices)
         status.clients_total = (status.wired_total + status.wifi_clients_total + status.guest_clients_total
                                 + (status.iot_clients_total or 0))
 
