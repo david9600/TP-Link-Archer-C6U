@@ -503,7 +503,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
                 self._easymesh = False
 
         if easymesh_device_list:
-            self._logger.info("Entering easymesh node-to-device processing")
+            self._logger.info("Entering mesh node-to-device processing")
             for ap in easymesh_device_list:
                 # 'sclient' is mesh main or satellite, 'nclient' is a network device
                 sclient_detail = self.request('admin/easymesh_network?form=mesh_sclient_detail&operation=read&mac='+ap['mac'], 'operation=read&mac='+ap['mac'])
@@ -528,7 +528,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         the form with an error, which is the same signal get_status() already
         uses to stop enriching clients with ap_name.
         """
-        return []
+        
         self._logger.info('entering get_mesh_nodes')
         
         if not self._easymesh:
