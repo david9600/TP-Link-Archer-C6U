@@ -585,7 +585,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
                     ap_associations[nclient_mac] = (ap.get('name'))
             self._logger.info('ap_associations: %s', ap_associations)
 
-        return mesh_nodes
+        return mesh_nodes, ap_associations
     
     def get_ipv4_status(self) -> IPv4Status:
         ipv4_status = IPv4Status()
