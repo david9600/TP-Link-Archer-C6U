@@ -495,30 +495,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             except Exception:
                 self._wan_ipv4_dynamic = False
 
-        easymesh_device_list = None
-        if self._easymesh:
-            try:
-                easymesh_device_list = self.request(self._url_easymesh_device_list, 'operation=read')
-            except Exception:
-                self._easymesh = False
-
-        if easymesh_device_list:
-            self._logger.info("Entering original mesh node-to-device processing")
-            for ap in easymesh_device_list:
-                continue
-                # 'sclient' is mesh main or satellite, 'nclient' is a network device
-                sclient_detail = self.request('admin/easymesh_network?form=mesh_sclient_detail&operation=read&mac='+ap['mac'], 'operation=read&mac='+ap['mac'])
-                for nclient in sclient_detail['mesh_nclient_list']:
-                    if ap['role'] == 'satellite_router':
-                        devices[nclient['mac']].ap_name = ap['name']
-                        devices[nclient['mac']].signal = nclient['signal_strength']
-                    else:
-                        # prefix * helps identify and sort main node devices for display
-                        devices[nclient['mac']].ap_name = '*'+ap['name']
-        
-        # self._logger.info('devices dict: %s', devices)
         status.devices = list(devices.values())
-        # self._logger.info('list(devices.values()): %s', status.devices)
         status.clients_total = (status.wired_total + status.wifi_clients_total + status.guest_clients_total
                                 + (status.iot_clients_total or 0))
 
@@ -537,16 +514,15 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         if not self._easymesh:
             return []
 
+        easymesh_device_list = None
         try:
             easymesh_device_list = self.request(self._url_easymesh_device_list, 'operation=read')
         except Exception:
             self._easymesh = False
             return []
 
-        # self._logger.info('easymesh device list: %s', easymesh_device_list)
-
         mesh_nodes = []
-        client_detail = []
+        client_ap_assoc = []
         for ap in easymesh_device_list or []:
             mesh_node = MeshNode()
             mesh_node._macaddr = get_mac(ap['mac']) if ap.get('mac') else None
@@ -570,30 +546,28 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             mesh_node.support_reboot = ap.get('support_reboot')
             mesh_nodes.append(mesh_node)
 
-            # node-to-device processing----------------
-            
-            # 'sclient' is mesh main or satellite, 'nclient' is a network device
-            sclient_detail = self.request(
-                'admin/easymesh_network?form=mesh_sclient_detail&operation=read&mac=' + ap['mac'],
-                'operation=read&mac=' + ap['mac'])
-
-            # self._logger.info('sclient_detail: %s', sclient_detail)
+            # Build a list of clients with AP association and signal_strength details.
+            try:
+                # 'sclient' is mesh main or satellite, 'nclient' is a network device
+                sclient_detail = self.request(
+                    'admin/easymesh_network?form=mesh_sclient_detail&operation=read&mac=' + ap['mac'],
+                    'operation=read&mac=' + ap['mac'])
+            except Exception:
+                continue
 
             for nclient in sclient_detail.get('mesh_nclient_list') or []:
                 nclient_mac = nclient.get('mac')
                 if not nclient_mac:
                     continue
-                client_detail.append({
+                client_ap_assoc.append({
                     "mac": nclient_mac, 
                     "ap_name": ap.get('name'), 
                     "signal_strength": nclient.get('signal_strength')
                 })
 
-            # self._logger.info('mesh_node: %s', mesh_node)
+        self._logger.info('client_ap_assoc: %s', client_ap_assoc)
 
-        self._logger.info('client_detail: %s', client_detail)
-
-        return mesh_nodes, client_detail
+        return mesh_nodes, client_ap_assoc
     
     def get_ipv4_status(self) -> IPv4Status:
         ipv4_status = IPv4Status()
