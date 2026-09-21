@@ -560,7 +560,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
                 device_ap_assoc[nclient_mac] = {
                     "ap_name": ap.get('name'), 
                     "signal_strength": nclient.get('signal_strength')
-                    }
+                }
 
         return mesh_nodes, device_ap_assoc
     
