@@ -558,7 +558,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
                 if not nclient_mac:
                     continue
                 device_ap_assoc.append({
-                    "nclient_mac": nclient_mac,
+                    "mac": nclient_mac,
                     "ap_name": ap.get('name'), 
                     "signal_strength": nclient.get('signal_strength'),
                 })
