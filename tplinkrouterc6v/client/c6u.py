@@ -505,8 +505,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         """Return the EasyMesh nodes reported by the main router.
 
         Returns an empty list on routers that do not run EasyMesh: they answer
-        the form with an error, which is the same signal get_status() already
-        uses to stop enriching clients with ap_name.
+        the form with an error.
         """
         
         self._logger.info('entering get_mesh_nodes')
@@ -546,7 +545,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             mesh_node.support_reboot = ap.get('support_reboot')
             mesh_nodes.append(mesh_node)
 
-            # Build client device list, with AP association (and signal_strength if on satellite node).
+            # Build client device list with AP association (and signal_strength if on satellite node).
             try:
                 # 'sclient' is mesh main or satellite, 'nclient' is a network device
                 form_data = f'operation=read&mac={ap['mac']}'
