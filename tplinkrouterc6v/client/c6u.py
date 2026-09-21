@@ -561,7 +561,6 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
                     "ap_name": ap.get('name'), 
                     "signal_strength": nclient.get('signal_strength')
                 }
-        self._logger.info('device_ap_assoc in c6u: %s', device_ap_assoc)
 
         return mesh_nodes, device_ap_assoc
     
