@@ -549,9 +549,8 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             # Build client device list, with AP association (and signal_strength on satellite nodes).
             try:
                 # 'sclient' is mesh main or satellite, 'nclient' is a network device
-                sclient_detail = self.request(
-                    'admin/easymesh_network?form=mesh_sclient_detail&operation=read&mac=' + ap['mac'],
-                    'operation=read&mac=' + ap['mac'])
+                form_data = f'operation=read&mac={ap['mac']}'
+                sclient_detail = self.request(f'admin/easymesh_network?form=mesh_sclient_detail&{form_data}', form_data)
             except Exception:
                 continue
 
