@@ -521,7 +521,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             return []
 
         mesh_nodes = []
-        device_ap_assoc = {}
+        device_ap_assoc = []
         for ap in easymesh_device_list or []:
             mesh_node = MeshNode()
             mesh_node._macaddr = get_mac(ap['mac']) if ap.get('mac') else None
@@ -557,10 +557,11 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
                 nclient_mac = nclient.get('mac')
                 if not nclient_mac:
                     continue
-                device_ap_assoc[nclient_mac] = {
+                device_ap_assoc.append({
+                    "nclient_mac": nclient_mac,
                     "ap_name": ap.get('name'), 
-                    "signal_strength": nclient.get('signal_strength')
-                }
+                    "signal_strength": nclient.get('signal_strength'),
+                })
 
         return mesh_nodes, device_ap_assoc
     
