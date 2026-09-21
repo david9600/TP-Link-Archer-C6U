@@ -502,8 +502,8 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         return status
 
     def get_mesh_nodes(self) -> list[MeshNode]:
-        """Return the EasyMesh nodes reported by the main router.
-
+        """Return the EasyMesh nodes reported by the main router,
+        and ap_name enrichment for client network devices.
         Returns an empty list on routers that do not run EasyMesh: they answer
         the form with an error.
         """
@@ -539,7 +539,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             mesh_node.client_num = int(ap['client_num']) if ap.get('client_num') is not None else None
             # The payload key is signal_strength but the value is a bar level indicator, so it
             # lands in signal_level; signal_strength stays reserved for dBm. Absent on the
-            # main router, which has no uplink of its own.
+            # main router, which has no wireless uplink of its own.
             mesh_node.signal_level = (
                 int(ap['signal_strength']) if ap.get('signal_strength') is not None else None)
             mesh_node.support_reboot = ap.get('support_reboot')
@@ -562,8 +562,6 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
                     "ap_name": ap.get('name'), 
                     "signal_strength": nclient.get('signal_strength')
                 })
-
-        # self._logger.info('device_ap_assoc: %s', device_ap_assoc)
 
         return mesh_nodes, device_ap_assoc
     
