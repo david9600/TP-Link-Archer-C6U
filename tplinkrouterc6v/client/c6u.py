@@ -546,7 +546,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             mesh_node.support_reboot = ap.get('support_reboot')
             mesh_nodes.append(mesh_node)
 
-            # Build client device list, with AP association (and signal_strength on satellite nodes).
+            # Build client device list, with AP association (and signal_strength if on satellite node).
             try:
                 # 'sclient' is mesh main or satellite, 'nclient' is a network device
                 form_data = f'operation=read&mac={ap['mac']}'
