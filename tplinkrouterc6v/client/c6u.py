@@ -27,6 +27,8 @@ from tplinkrouterc6v.common.dataclass import (
 from tplinkrouterc6v.common.exception import ClientException, ClientError
 from tplinkrouterc6v.client_abstract import AbstractRouter
 from abc import abstractmethod
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers import device_registry as dr
 
 
 class TplinkRequest:
@@ -537,6 +539,26 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
                                 + (status.iot_clients_total or 0))
 
         return status
+
+# For testing a query to HA device registry
+def get_devices_by_attribute(hass: HomeAssistant, target_manufacturer: str, target_model: str = None):
+    # Get the device registry instance
+    dev_reg = dr.async_get(hass)
+    matching_devices = []
+
+    # Iterate through all devices in the registry
+    for device_entry in dev_reg.devices.values():
+        # Check if the manufacturer matches (case-insensitive check is safer)
+        if device_entry.manufacturer and target_manufacturer.lower() in device_entry.manufacturer.lower():
+            
+            # Optionally check if the model also matches
+            if target_model:
+                if device_entry.model and target_model.lower() in device_entry.model.lower():
+                    matching_devices.append(device_entry)
+            else:
+                matching_devices.append(device_entry)
+
+    return matching_devices
 
     def get_ipv4_status(self) -> IPv4Status:
         ipv4_status = IPv4Status()
