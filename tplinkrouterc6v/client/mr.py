@@ -341,12 +341,12 @@ class TPLinkMRClientBase(AbstractRouter):
 
         self._logger.debug(status)
 
-        router_trackers = get_trackers_by_attribute(hass, "source_type", "router")
+        router_trackers = self._get_trackers_by_attribute(hass, "source_type", "router")
         self._logger.info(f"Filtered trackers: {router_trackers}")
 
         return status
 
-    def get_trackers_by_attribute(hass: HomeAssistant, attr_name: str, target_value: any):
+    def _get_trackers_by_attribute(hass: HomeAssistant, attr_name: str, target_value: any):
         # Fetch all current states under the device_tracker domain
         all_trackers = hass.states.async_all("device_tracker")
     
