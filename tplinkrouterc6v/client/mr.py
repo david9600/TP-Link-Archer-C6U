@@ -86,7 +86,7 @@ class TPLinkMRClientBase(AbstractRouter):
             self.pstack = pstack
             self.attrs = attrs
 
-    def __init__(self, host: str, password: str, username: str = 'admin', logger: Logger = None,
+    def __init__(self, hass: HomeAssistant, host: str, password: str, username: str = 'admin', logger: Logger = None,
                  verify_ssl: bool = True, timeout: int = 30) -> None:
         super().__init__(host, password, username, logger, verify_ssl, timeout)
 
