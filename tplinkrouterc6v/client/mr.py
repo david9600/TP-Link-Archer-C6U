@@ -5,6 +5,7 @@ from urllib.parse import quote
 from requests import Session, Response
 from datetime import timedelta, datetime
 from logging import Logger
+from homeassistant.core import HomeAssistant
 from tplinkrouterc6v.common.helper import get_ip, get_ipv6, get_mac, get_value
 from tplinkrouterc6v.common.encryption import EncryptionWrapperMR, EncryptionWrapperMRGCM, EncryptionWrapperMRECC
 from json import loads as json_loads
