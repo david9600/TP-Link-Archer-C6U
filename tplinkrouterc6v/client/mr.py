@@ -340,6 +340,19 @@ class TPLinkMRClientBase(AbstractRouter):
 
         self._logger.debug(status)
 
+        # Get all device trackers matching a specific attribute (e.g., battery_level < 50)
+        matching_trackers = []
+        for state in hass.states.all():
+            if state.entity_id.startswith("device_tracker."):
+                # Check if attribute exists and matches your condition
+                battery = state.attributes.get("battery_level")
+                if battery is not None and battery < 50:
+                    matching_trackers.append(state.entity_id)
+
+        # Output or use your list of matching entity IDs
+        self._logger.info(f"Filtered trackers: {matching_trackers}")
+
+
         return status
 
     def get_ipv4_reservations(self) -> List[IPv4Reservation]:
