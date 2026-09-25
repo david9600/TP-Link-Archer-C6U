@@ -5,7 +5,6 @@ from urllib.parse import quote
 from requests import Session, Response
 from datetime import timedelta, datetime
 from logging import Logger
-from homeassistant.core import HomeAssistant
 from tplinkrouterc6v.common.helper import get_ip, get_ipv6, get_mac, get_value
 from tplinkrouterc6v.common.encryption import EncryptionWrapperMR, EncryptionWrapperMRGCM, EncryptionWrapperMRECC
 from json import loads as json_loads
@@ -86,7 +85,7 @@ class TPLinkMRClientBase(AbstractRouter):
             self.pstack = pstack
             self.attrs = attrs
 
-    def __init__(self, hass: HomeAssistant, host: str, password: str, username: str = 'admin', logger: Logger = None,
+    def __init__(self, host: str, password: str, username: str = 'admin', logger: Logger = None,
                  verify_ssl: bool = True, timeout: int = 30) -> None:
         super().__init__(host, password, username, logger, verify_ssl, timeout)
 
@@ -341,22 +340,7 @@ class TPLinkMRClientBase(AbstractRouter):
 
         self._logger.debug(status)
 
-        router_trackers = self._get_trackers_by_attribute(hass, "source_type", "router")
-        self._logger.info(f"Filtered trackers: {router_trackers}")
-
         return status
-
-    def _get_trackers_by_attribute(hass: HomeAssistant, attr_name: str, target_value: any):
-        # Fetch all current states under the device_tracker domain
-        all_trackers = hass.states.async_all("device_tracker")
-    
-        matching_trackers = []
-    
-        for state in all_trackers:
-            if state.attributes.get(attr_name) == target_value:
-                matching_trackers.append(state.entity_id)
-            
-        return matching_trackers
     
     def get_ipv4_reservations(self) -> List[IPv4Reservation]:
         acts = [
