@@ -28,7 +28,7 @@ from tplinkrouterc6v.common.exception import ClientException, ClientError
 from tplinkrouterc6v.client_abstract import AbstractRouter
 from abc import abstractmethod
 # from homeassistant.core import HomeAssistant
-# from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import device_registry as dr
 
 
 class TplinkRequest:
@@ -497,8 +497,9 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             except Exception:
                 self._wan_ipv4_dynamic = False
 
-        for v in devices.values():
-            self._logger.info('values: %s', v)
+        device_registry = dr.async_get(hass)
+        # Look up a device by its ID
+        # device_entry = device_registry.async_get(device_id)
 
         status.devices = list(devices.values())
         status.clients_total = (status.wired_total + status.wifi_clients_total + status.guest_clients_total
