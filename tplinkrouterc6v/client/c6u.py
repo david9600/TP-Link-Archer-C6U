@@ -499,8 +499,9 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
 
         def _find_mesh_nodes(hass: HomeAssistant) -> list:
             entity_registry = er.async_get(hass)
-        # Look up a device by its ID
-        # device_entry = device_registry.async_get(device_id)
+            # Loop through all entries in the entity registry
+            for entity_id, entry in entity_reg.entities.items():
+                self._logger.info('entity_id: %s, entry: %s', entity_id, entry)
 
         status.devices = list(devices.values())
         status.clients_total = (status.wired_total + status.wifi_clients_total + status.guest_clients_total
