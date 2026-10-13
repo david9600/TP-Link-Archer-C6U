@@ -564,6 +564,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             return [], []
 
         mesh_nodes = []
+        device_ap_assoc = []
         for item in data or []:
             mesh_node = MeshNode()
             mesh_node._macaddr = get_mac(item['mac']) if item.get('mac') else None
