@@ -497,13 +497,13 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             except Exception:
                 self._wan_ipv4_dynamic = False
 
-        def _find_mesh_nodes(hass) -> list:
+        def _find_mesh_nodes(hass: HomeAssistant) -> list:
             entity_registry = er.async_get(hass)
             # Loop through all entries in the entity registry
             for entity_id, entry in entity_reg.entities.items():
                 self._logger.info('entity_id: %s, entry: %s', entity_id, entry)
 
-        _node_list = _find_mesh_nodes(hass: HomeAssistant)
+        _node_list = _find_mesh_nodes(hass)
 
         status.devices = list(devices.values())
         status.clients_total = (status.wired_total + status.wifi_clients_total + status.guest_clients_total
