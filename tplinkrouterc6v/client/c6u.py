@@ -503,6 +503,8 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             for entity_id, entry in entity_reg.entities.items():
                 self._logger.info('entity_id: %s, entry: %s', entity_id, entry)
 
+        _node_list = _find_mesh_nodes()
+
         status.devices = list(devices.values())
         status.clients_total = (status.wired_total + status.wifi_clients_total + status.guest_clients_total
                                 + (status.iot_clients_total or 0))
