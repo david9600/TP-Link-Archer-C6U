@@ -5,7 +5,7 @@ from macaddress import EUI48
 from ipaddress import IPv4Address, IPv6Address
 from dataclasses import dataclass, field
 from datetime import datetime
-from tplinkrouterc6v.common.package_enum import Connection, VpnClientServerProtocol
+from tplinkrouterc6u.common.package_enum import Connection, VpnClientServerProtocol
 
 
 @dataclass
@@ -61,8 +61,6 @@ class Status:
     _wan_ipv4_gateway: IPv4Address | None = None
     wan_ipv6_enabled: bool | None = None
     _wan_ipv6_addr: IPv6Address | None = None
-    usb_modem_state: str | None = None
-    wan_backup_enable: bool | None = None
     ewan_connected: bool | None = None
     lan_ipv4_dhcp_enable: bool | None = None
     wired_total: int = 0
@@ -79,6 +77,9 @@ class Status:
     wifi_2g_enable: bool | None = None
     wifi_5g_enable: bool | None = None
     wifi_6g_enable: bool | None = None
+    wifi_mlo_2g_enable: bool | None = None
+    wifi_mlo_5g_enable: bool | None = None
+    wifi_mlo_6g_enable: bool | None = None
     wan_ipv4_uptime: int | None = None
     mem_usage: float | None = None
     cpu_usage: float | None = None
@@ -128,6 +129,7 @@ class Status:
     @property
     def wan_ipv6_addr(self) -> str | None:
         return str(self._wan_ipv6_addr) if self._wan_ipv6_addr is not None else None
+
 
 @dataclass
 class MeshNode:
@@ -520,6 +522,7 @@ class WifiStatus:
     portal_password: str | None = None
     channel: int | None = None
 
+
 @dataclass
 class PortStatus:
     port: int
@@ -537,4 +540,3 @@ class PortStatus:
     tx_bad_packets: int | None = None
     rx_good_packets: int | None = None
     rx_bad_packets: int | None = None
-    
