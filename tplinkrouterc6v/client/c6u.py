@@ -563,6 +563,8 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             self._easymesh = False
             return []
 
+        self._logger.info('data: %s', data)
+
         mesh_nodes = []
         device_ap_assoc = []
         for ap in data or []:
