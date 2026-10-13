@@ -547,7 +547,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
 
         return mesh_nodes
 
-    def get_mesh_nodes(self) -> list[MeshNode]:
+    def get_mesh_nodes(self) -> tuple[list[MeshNode], list | None]:
         """Return the EasyMesh nodes reported by the main router,
            and optionally the ap_name association for wifi clients.
         Returns an empty list on routers that do not run EasyMesh: they answer
@@ -555,19 +555,17 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         uses to stop enriching clients with ap_name.
         """
         if not self._easymesh:
-            return []
+            return [], []
 
         try:
-            data = self.request(self._url_easymesh_device_list, 'operation=read')
+            ap_list = self.request(self._url_easymesh_device_list, 'operation=read')
         except Exception:
             self._easymesh = False
-            return []
-
-        self._logger.info('data: %s', data)
+            return [], []
 
         mesh_nodes = []
         device_ap_assoc = []
-        for ap in data or []:
+        for ap in ap_list or []:
             mesh_node = MeshNode()
             mesh_node._macaddr = get_mac(ap['mac']) if ap.get('mac') else None
             mesh_node._ipaddr = get_ip(ap['ip']) if ap.get('ip') else None
@@ -611,7 +609,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
                 })
         self._logger.info('device_ap_assoc: %s', device_ap_assoc)
         
-        return mesh_nodes
+        return mesh_nodes, device_ap_assoc
     
     def get_ipv4_status(self) -> IPv4Status:
         ipv4_status = IPv4Status()
