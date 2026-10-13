@@ -27,8 +27,8 @@ from tplinkrouterc6v.common.dataclass import (
 from tplinkrouterc6v.common.exception import ClientException, ClientError
 from tplinkrouterc6v.client_abstract import AbstractRouter
 from abc import abstractmethod
-# from homeassistant.core import HomeAssistant
-from homeassistant.helpers import device_registry as dr
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers import entity_registry as er
 
 
 class TplinkRequest:
@@ -497,7 +497,8 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             except Exception:
                 self._wan_ipv4_dynamic = False
 
-        device_registry = dr.async_get(hass)
+        def _find_mesh_nodes(hass: HomeAssistant) -> list:
+            entity_registry = er.async_get(hass)
         # Look up a device by its ID
         # device_entry = device_registry.async_get(device_id)
 
@@ -506,6 +507,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
                                 + (status.iot_clients_total or 0))
 
         return status
+
 
     def get_mesh_nodes(self) -> list[MeshNode]:
         """Return the EasyMesh nodes reported by the main router.
