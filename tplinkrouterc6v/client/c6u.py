@@ -504,6 +504,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         return status
 
     def get_mesh_clients(self) -> list:
+        mesh_client_details = []
         try:
             easymesh_device_list = self.request(self._url_easymesh_device_list, 'operation=read')
         except Exception:
@@ -513,20 +514,20 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         for ap in easymesh_device_list:
             try:
                 # 'sclient' is mesh main or satellite, 'nclient' is a network device
-                form_data = f'operation=read&mac={ap['mac']}'
+                form_data = f'operation=read&mac={ap.get('mac')}'
                 sclient_detail = self.request(f'admin/easymesh_network?form=mesh_sclient_detail&{form_data}', form_data)
             except Exception:
                 continue
             if not sclient_detail:
                 continue
                 
-            ap_client_details.append({
+            mesh_client_details.append({
               "ap_mac": ap.get('mac'),
-              "ap_name: ap.get('name'),
+              "ap_name": ap.get('name'),
               "nclient_list": sclient_detail.get('mesh_nclient_list')
             })
         
-        return ap_client_details
+        return mesh_client_details
 
     def get_mesh_nodes_old(self) -> list[MeshNode]:
         """Return the EasyMesh nodes reported by the main router.
